@@ -1,35 +1,43 @@
-# =====================
-# Visual Studio / .NET
-# =====================
-.vs/
-*.user
-*.suo
-*.sln.docstates
-*.userosscache
-*.userprefs
-*.pdb
-*.cache
-*.log
-*.db
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Build folders
-bin/
-obj/
-out/
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
 
-# Publish folder
-publish/
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
 
-# EF Core Migrations (optional)
-Migrations/
-
-# Rider IDE files
+# IDEs and editors
 .idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# OS-specific files
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
 .DS_Store
-
-# Others
-*.swp
-*.bak
-*.tmp
+Thumbs.db
