@@ -1,13 +1,35 @@
-# Visual Studio
+# =====================
+# Visual Studio / .NET
+# =====================
 .vs/
-bin/
-obj/
 *.user
 *.suo
-*.db
+*.sln.docstates
+*.userosscache
+*.userprefs
+*.pdb
+*.cache
 *.log
-.vscode/
-*.DS_Store
+*.db
+
+# Build folders
+bin/
+obj/
+out/
+
+# Publish folder
+publish/
 
 # EF Core Migrations (optional)
 Migrations/
+
+# Rider IDE files
+.idea/
+
+# OS-specific files
+.DS_Store
+
+# Others
+*.swp
+*.bak
+*.tmp
