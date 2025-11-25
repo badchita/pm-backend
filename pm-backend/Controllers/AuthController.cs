@@ -20,11 +20,38 @@ namespace pm_backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Request body is missing"
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Name) ||
+                string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Name, email and password are required"
+                });
+            }
+
             var exists = await _context.Users.AnyAsync(u => u.Email == request.Email);
+
             if (exists)
-                return BadRequest("Email already registered");
+            {
+                return Conflict(new
+                {
+                    success = false,
+                    message = "Email already registered"
+                });
+            }
 
             var user = new User
             {
@@ -36,7 +63,17 @@ namespace pm_backend.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok("User registered successfully");
+            return Created("", new
+            {
+                success = true,
+                message = "User registered successfully",
+                data = new
+                {
+                    user.Id,
+                    user.Name,
+                    user.Email
+                }
+            });
         }
 
         [HttpPost("login")]
