@@ -9,24 +9,37 @@ namespace pm_backend
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services
             builder.Services.AddRazorPages();
+
+            // Add controller support for Web API
+            builder.Services.AddControllers();
 
             builder.Services.AddDbContext<PmDbContext>(options =>
             {
                 options.UseSqlServer(
                    "Server=localhost;Database=pm;Trusted_Connection=True;TrustServerCertificate=True;"
                 );
+            });
 
+            // Enable CORS for Angular dev server
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
             });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -35,15 +48,22 @@ namespace pm_backend
 
             app.UseRouting();
 
+            app.UseCors("AllowAngularDev");
+
             app.UseAuthorization();
 
+            // Map Web API controllers
+            app.MapControllers();
+
+            // Map Razor Pages
+            app.MapRazorPages();
+
+            // Redirect root to Angular login
             app.MapGet("/", context =>
             {
                 context.Response.Redirect("http://localhost:4200/login");
                 return Task.CompletedTask;
             });
-
-            app.MapRazorPages();
 
             app.Run();
         }
