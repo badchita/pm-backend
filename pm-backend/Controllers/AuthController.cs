@@ -42,7 +42,7 @@ namespace pm_backend.Controllers
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("already registered"))
             {
-                return Conflict(ex.Message); // 409
+                return Conflict(ex.Message);
             }
             catch (Exception)
             {
@@ -63,26 +63,31 @@ namespace pm_backend.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (user == null)
-                return Unauthorized("Invalid email or password");
-
-            var validPassword = PasswordService.Verify(request.Password, user.PasswordHash);
-
-            if (!validPassword)
-                return Unauthorized("Invalid email or password");
-
-            return Ok(new
+            try
             {
-                message = "Login success",
-                user.Id,
-                user.Name,
-                user.Email
-            });
+                var result = await _authCommandService.Login(request);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while processing your request.");
+            }
         }
+
     }
 }
