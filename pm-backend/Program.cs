@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using pm_backend.Data;
+using pm_backend.Services.Commands;
+using pm_backend.Services.Commands.Contracts;
 
 namespace pm_backend
 {
@@ -33,6 +35,8 @@ namespace pm_backend
                           .AllowCredentials();
                 });
             });
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
 

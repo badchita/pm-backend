@@ -4,6 +4,7 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services;
+using pm_backend.Services.Commands.Contracts;
 using System;
 
 namespace pm_backend.Controllers
@@ -13,67 +14,52 @@ namespace pm_backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly PmDbContext _context;
-
-        public AuthController(PmDbContext context)
+        private readonly IAuthService _authCommandService;
+        public AuthController(
+            PmDbContext context,
+            IAuthService authCommandService
+        )
         {
             _context = context;
+            _authCommandService = authCommandService;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
-            if (request == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Request body is missing"
-                });
+                var user = await _authCommandService.RegisterUser(request);
+
+                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
             }
-
-            if (string.IsNullOrWhiteSpace(request.Name) ||
-                string.IsNullOrWhiteSpace(request.Email) ||
-                string.IsNullOrWhiteSpace(request.Password))
+            catch (InvalidOperationException ex) when (ex.Message.Contains("already registered"))
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Name, email and password are required"
-                });
+                return Conflict(ex.Message); // 409
             }
-
-            var exists = await _context.Users.AnyAsync(u => u.Email == request.Email);
-
-            if (exists)
+            catch (Exception)
             {
-                return Conflict(new
-                {
-                    success = false,
-                    message = "Email already registered"
-                });
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while processing your request.");
             }
+        }
 
-            var user = new User
-            {
-                Name = request.Name,
-                Email = request.Email,
-                PasswordHash = PasswordService.Hash(request.Password)
-            };
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (user == null)
+                return NotFound();
 
-            return Created("", new
-            {
-                success = true,
-                message = "User registered successfully",
-                data = new
-                {
-                    user.Id,
-                    user.Name,
-                    user.Email
-                }
-            });
+            return Ok(user);
         }
 
         [HttpPost("login")]
