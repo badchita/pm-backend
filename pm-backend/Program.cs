@@ -29,8 +29,8 @@ namespace pm_backend
             });
 
             // Configure JWT Authentication
-            var jwtKey = builder.Configuration["JwtSettings:Key"]
-                         ?? "THIS_IS_A_VERY_SECURE_KEY_CHANGE_THIS_LATER";
+            var jwtKey = builder.Configuration["Jwt:Key"]
+                         ?? "TfW2gR+gL0mmYnNtePOX+0/sTbQcRB9A7JiGo8QmR/WA=";
 
             builder.Services.AddAuthentication(options =>
             {
