@@ -21,9 +21,6 @@ out/
 # Publish folder
 publish/
 
-# EF Core Migrations (optional)
-Migrations/
-
 # Rider IDE files
 .idea/
 
