@@ -9,6 +9,5 @@ namespace pm_backend.Data
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Project> Projects { get; set; }
-
     }
 }
