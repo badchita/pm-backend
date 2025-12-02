@@ -82,10 +82,10 @@ namespace pm_backend.Controllers
             {
                 return Unauthorized(ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Login failed: {ex.Message}");
+                    "An unexpected error occurred while processing your request.");
             }
         }
 
