@@ -8,5 +8,7 @@ namespace pm_backend.Data
         public PmDbContext(DbContextOptions<PmDbContext> options) : base(options) {}
 
         public DbSet<User> Users => Set<User>();
+        public DbSet<Project> Projects { get; set; }
+
     }
 }

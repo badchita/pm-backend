@@ -37,6 +37,7 @@ namespace pm_backend
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IProjectService, ProjectCommandService>();
 
             var app = builder.Build();
 
