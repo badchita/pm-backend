@@ -31,5 +31,7 @@ namespace pm_backend.Models
         public string IsDeleted { get; set; } = "N";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? DueDate { get; set; }
     }
 }
