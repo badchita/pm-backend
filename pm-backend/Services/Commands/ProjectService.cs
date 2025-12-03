@@ -34,6 +34,18 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
+        public async Task<Project?> GetProjectByIdAsync(int id, string userEmail)
+        {
+            if (string.IsNullOrWhiteSpace(userEmail))
+                throw new UnauthorizedAccessException("User not authorized.");
+
+            var project = await _context.Projects
+                .FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == "N");
+
+            return project;
+        }
+
+
         private async Task<string> GenerateProjectNumber()
         {
             var latestProject = await _context.Projects

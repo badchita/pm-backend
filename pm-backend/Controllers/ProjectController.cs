@@ -59,14 +59,39 @@ namespace pm_backend.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProjectById(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            if (id <= 0)
+                return BadRequest("Invalid project id.");
 
-            if (project == null)
-                return NotFound();
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
 
-            return Ok(project);
+                var project = await _projectCommandService.GetProjectByIdAsync(id, userEmail);
+
+                if (project == null)
+                    return NotFound($"Project with id {id} was not found.");
+
+                return Ok(project);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving the project.");
+            }
         }
+
     }
 }
