@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.Data;
 using pm_backend.DTOs;
+using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,8 +27,9 @@ namespace pm_backend.Controllers
 
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProject(CreateProjectRequest request)
         {
@@ -44,6 +46,10 @@ namespace pm_backend.Controllers
 
                 return CreatedAtAction(nameof(GetProjectById),
                     new { id = project.Id }, project);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
             }
             catch (Exception)
             {
