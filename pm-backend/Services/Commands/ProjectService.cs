@@ -45,6 +45,25 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
+        public async Task<Project?> UpdateProjectAsync(int id, UpdateProjectRequest request, string userEmail)
+        {
+            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == "N");
+
+            if (project == null)
+                return null;
+
+            project.ProjectName = request.ProjectName;
+            project.Description = request.Description;
+            project.IsPublished = request.IsPublished ?? project.IsPublished;
+            project.IsDeleted = request.IsDeleted ?? project.IsDeleted;
+            project.DueDate = request.DueDate;
+
+            await _context.SaveChangesAsync();
+
+            return project;
+        }
+
+
 
         private async Task<string> GenerateProjectNumber()
         {
