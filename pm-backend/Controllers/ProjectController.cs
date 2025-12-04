@@ -93,5 +93,43 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateProject(int id, UpdateProjectRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id <= 0)
+                return BadRequest("Invalid project id.");
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var updatedProject = await _projectCommandService.UpdateProjectAsync(id, request, userEmail);
+
+                if (updatedProject == null)
+                    return NotFound($"Project with id {id} was not found.");
+
+                return Ok(updatedProject);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while updating the project.");
+            }
+        }
     }
 }
