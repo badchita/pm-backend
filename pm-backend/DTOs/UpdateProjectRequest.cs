@@ -12,11 +12,5 @@ namespace pm_backend.DTOs
         public string? Description { get; set; }
 
         public DateTime? DueDate { get; set; }
-
-        [MaxLength(1)]
-        public string? IsPublished { get; set; }
-
-        [MaxLength(1)]
-        public string? IsDeleted { get; set; }
     }
 }
