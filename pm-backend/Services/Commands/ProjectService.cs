@@ -54,8 +54,6 @@ namespace pm_backend.Services.Commands
 
             project.ProjectName = request.ProjectName;
             project.Description = request.Description;
-            project.IsPublished = request.IsPublished ?? project.IsPublished;
-            project.IsDeleted = request.IsDeleted ?? project.IsDeleted;
             project.DueDate = request.DueDate;
 
             await _context.SaveChangesAsync();
