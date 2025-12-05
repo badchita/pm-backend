@@ -74,6 +74,18 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
+        public async Task<Project> UnPublishProjectAsync(int id, string userEmail)
+        {
+            var project = await _context.Projects.FindAsync(id);
+
+            project.IsPublished = "N";
+
+            _context.Projects.Update(project);
+            await _context.SaveChangesAsync();
+
+            return project;
+        }
+
         private async Task<string> GenerateProjectNumber()
         {
             var latestProject = await _context.Projects
