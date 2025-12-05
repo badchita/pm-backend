@@ -23,7 +23,18 @@ namespace pm_backend.Services.Queries
             {
                 projects = projects.Where(p =>
                     p.ProjectName.Contains(query.Search) ||
-                    p.Description.Contains(query.Search)
+                    p.Description.Contains(query.Search) ||
+                    p.CreatedBy.Contains(query.Search)
+                );
+            }
+
+            if (query.DueDate.HasValue)
+            {
+                var dueDate = query.DueDate.Value.Date;
+
+                projects = projects.Where(p =>
+                    p.DueDate.HasValue &&
+                    p.DueDate.Value.Date == dueDate
                 );
             }
 
