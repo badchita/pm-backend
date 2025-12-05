@@ -3,6 +3,7 @@
     public class ProjectListQuery
     {
         public string? Search { get; set; }
+        public DateTime? DueDate { get; set; }
         public string? IsPublished { get; set; }
 
         public int Page { get; set; } = 1;
