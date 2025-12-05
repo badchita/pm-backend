@@ -164,5 +164,46 @@ namespace pm_backend.Controllers
                     "An unexpected error occurred while retrieving projects.");
             }
         }
+
+        [HttpPut("{id}/publish")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PublishProject(int id)
+        {
+            if (id <= 0)
+                return BadRequest(new[] { "Invalid project id." });
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var publishedProject = await _projectCommandService.PublishProjectAsync(id, userEmail);
+
+                return Ok(publishedProject);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new[] { ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new[] { ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new[] { "An unexpected error occurred while publishing the project." });
+            }
+        }
     }
 }
