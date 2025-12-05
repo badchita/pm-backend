@@ -172,10 +172,13 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> PublishProject(int id)
+        public async Task<IActionResult> PublishProject(int id, [FromBody] PublishProjectRequest request)
         {
             if (id <= 0)
                 return BadRequest(new[] { "Invalid project id." });
+
+            if (request == null)
+                return BadRequest(new[] { "Request body is required." });
 
             try
             {
@@ -183,7 +186,7 @@ namespace pm_backend.Controllers
                     .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
                     ?? "system@local";
 
-                var publishedProject = await _projectCommandService.PublishProjectAsync(id, userEmail);
+                var publishedProject = await _projectCommandService.PublishProjectAsync(id, request, userEmail);
 
                 return Ok(publishedProject);
             }
