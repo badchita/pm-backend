@@ -172,13 +172,10 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> PublishProject(int id, [FromBody] PublishProjectRequest request)
+        public async Task<IActionResult> PublishProject(int id)
         {
             if (id <= 0)
-                return BadRequest(new[] { "Invalid project id." });
-
-            if (request == null)
-                return BadRequest(new[] { "Request body is required." });
+                return BadRequest("Invalid project id.");
 
             try
             {
@@ -186,26 +183,26 @@ namespace pm_backend.Controllers
                     .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
                     ?? "system@local";
 
-                var publishedProject = await _projectCommandService.PublishProjectAsync(id, request, userEmail);
+                var publishedProject = await _projectCommandService.PublishProjectAsync(id, userEmail);
 
                 return Ok(publishedProject);
             }
-            catch (ValidationException ex)
+            catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Errors);
+                return BadRequest(ex.Message);
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new[] { ex.Message });
+                return NotFound(ex.Message);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new[] { ex.Message });
+                return Unauthorized(ex.Message);
             }
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new[] { "An unexpected error occurred while publishing the project." });
+                    "An unexpected error occurred while publishing the project.");
             }
         }
     }

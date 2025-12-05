@@ -62,30 +62,9 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
-        public async Task<Project> PublishProjectAsync(int id, PublishProjectRequest request, string userEmail)
+        public async Task<Project> PublishProjectAsync(int id, string userEmail)
         {
             var project = await _context.Projects.FindAsync(id);
-
-            if (project == null)
-                throw new KeyNotFoundException($"Project with id {id} was not found.");
-
-            var errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(request.ProjectName))
-                errors.Add("ProjectName cannot be empty.");
-
-            if (string.IsNullOrWhiteSpace(request.Description))
-                errors.Add("Description cannot be empty.");
-
-            if (!request.DueDate.HasValue)
-                errors.Add("DueDate cannot be empty.");
-
-            if (errors.Any())
-                throw new ValidationException(errors);
-
-            project.ProjectName = request.ProjectName;
-            project.Description = request.Description;
-            project.DueDate = request.DueDate;
 
             project.IsPublished = "Y";
 
