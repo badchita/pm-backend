@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using pm_backend.Data;
 using pm_backend.Services.Commands;
 using pm_backend.Services.Commands.Contracts;
+using pm_backend.Services.Queries;
+using pm_backend.Services.Queries.Contracts;
 using System.Text;
 
 namespace pm_backend
@@ -69,6 +71,7 @@ namespace pm_backend
             // Dependency injection
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProjectService, ProjectCommandService>();
+            builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 
             var app = builder.Build();
 
