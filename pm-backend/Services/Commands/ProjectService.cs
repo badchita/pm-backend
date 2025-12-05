@@ -3,6 +3,7 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
+using System.ComponentModel.DataAnnotations;
 
 namespace pm_backend.Services.Commands
 {
@@ -61,7 +62,17 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
+        public async Task<Project> PublishProjectAsync(int id, string userEmail)
+        {
+            var project = await _context.Projects.FindAsync(id);
 
+            project.IsPublished = "Y";
+
+            _context.Projects.Update(project);
+            await _context.SaveChangesAsync();
+
+            return project;
+        }
 
         private async Task<string> GenerateProjectNumber()
         {
