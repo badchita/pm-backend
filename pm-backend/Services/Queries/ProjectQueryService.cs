@@ -24,6 +24,7 @@ namespace pm_backend.Services.Queries
                 projects = projects.Where(p =>
                     p.ProjectName.Contains(query.Search) ||
                     p.Description.Contains(query.Search) ||
+                    p.ProjectIdNumber.Contains(query.Search) ||
                     p.CreatedBy.Contains(query.Search)
                 );
             }
