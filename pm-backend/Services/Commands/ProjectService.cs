@@ -48,6 +48,9 @@ namespace pm_backend.Services.Commands
 
         public async Task<Project?> UpdateProjectAsync(int id, UpdateProjectRequest request, string userEmail)
         {
+            if (string.IsNullOrWhiteSpace(userEmail))
+                throw new UnauthorizedAccessException("User not authorized.");
+
             var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == "N");
 
             if (project == null)
@@ -62,10 +65,19 @@ namespace pm_backend.Services.Commands
             return project;
         }
 
-        public async Task<Project> PublishProjectAsync(int id, string userEmail)
+        public async Task<Project> PublishProjectAsync(int id, UpdateProjectRequest request, string userEmail)
         {
-            var project = await _context.Projects.FindAsync(id);
+            if (string.IsNullOrWhiteSpace(userEmail))
+                throw new UnauthorizedAccessException("User not authorized.");
 
+            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == "N");
+
+            if (project == null)
+                return null;
+
+            project.ProjectName = request.ProjectName;
+            project.Description = request.Description;
+            project.DueDate = request.DueDate;
             project.IsPublished = "Y";
 
             _context.Projects.Update(project);
