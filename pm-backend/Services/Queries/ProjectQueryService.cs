@@ -44,19 +44,32 @@ namespace pm_backend.Services.Queries
                 projects = projects.Where(p => p.IsPublished == query.IsPublished);
             }
 
-            projects = query.SortBy?.ToLower() switch
+            var sortBy = query.SortBy?.Trim().ToLower();
+            var sortDirection = query.SortDirection?.Trim().ToLower() == "asc" ? "asc" : "desc";
+
+            projects = sortBy switch
             {
-                "projectName" => query.SortDirection == "asc"
+                "projectname" => sortDirection == "asc"
                     ? projects.OrderBy(p => p.ProjectName)
                     : projects.OrderByDescending(p => p.ProjectName),
 
-                "isPublished" => query.SortDirection == "asc"
+                "projectidnumber" => sortDirection == "asc"
+                    ? projects.OrderBy(p => p.ProjectIdNumber)
+                    : projects.OrderByDescending(p => p.ProjectIdNumber),
+
+                "ispublished" => sortDirection == "asc"
                     ? projects.OrderBy(p => p.IsPublished)
                     : projects.OrderByDescending(p => p.IsPublished),
 
-                _ => query.SortDirection == "asc"
+                "duedate" => sortDirection == "asc"
+                    ? projects.OrderBy(p => p.DueDate)
+                    : projects.OrderByDescending(p => p.DueDate),
+
+                "createdat" => sortDirection == "asc"
                     ? projects.OrderBy(p => p.CreatedAt)
-                    : projects.OrderByDescending(p => p.CreatedAt)
+                    : projects.OrderByDescending(p => p.CreatedAt),
+
+                _ => projects.OrderByDescending(p => p.CreatedAt)
             };
 
             var totalCount = await projects.CountAsync();
