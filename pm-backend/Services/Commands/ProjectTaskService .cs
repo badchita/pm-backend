@@ -1,0 +1,48 @@
+﻿using pm_backend.Data;
+using pm_backend.DTOs.Tasks;
+using pm_backend.Models;
+using pm_backend.Services.Commands.Contracts;
+using Microsoft.EntityFrameworkCore;
+
+namespace pm_backend.Services.Commands
+{
+    public class ProjectTaskService : IProjectTaskService
+    {
+        private readonly PmDbContext _context;
+
+        public ProjectTaskService(PmDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<ProjectTask> CreateTaskAsync(CreateProjectTaskRequest request, string userEmail)
+        {
+            var project = await _context.Projects
+                .FirstOrDefaultAsync(p => p.Id == request.ProjectId);
+
+            if (project == null)
+                throw new KeyNotFoundException("Project not found.");
+
+            var task = new ProjectTask
+            {
+                ProjectId = request.ProjectId,
+                TaskName = request.TaskName,
+                Description = request.Description,
+                AcceptanceCriteria = request.AcceptanceCriteria,
+                AssignedTo = request.AssignedTo,
+                TaskPoints = request.TaskPoints,
+                ReadyForDevelopmentDate = request.ReadyForDevelopmentDate,
+                DoneDate = request.DoneDate,
+                TestingStartDate = request.TestingStartDate,
+                TestingEndDate = request.TestingEndDate,
+                CreatedBy = userEmail,
+                TaskIdNumber = $"TSK-{Guid.NewGuid().ToString()[..8].ToUpper()}"
+            };
+
+            _context.ProjectTask.Add(task);
+            await _context.SaveChangesAsync();
+
+            return task;
+        }
+    }
+}
