@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.Data;
 using pm_backend.DTOs;
+using pm_backend.DTOs.Tasks;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
-using pm_backend.Services.Queries;
 using pm_backend.Services.Queries.Contracts;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace pm_backend.Controllers
 {
@@ -18,16 +17,19 @@ namespace pm_backend.Controllers
         private readonly PmDbContext _context;
         private readonly IProjectService _projectCommandService;
         private readonly IProjectQueryService _projectQueryService;
+        private readonly IProjectTaskService _projectTaskCommandService;
 
         public ProjectController(
             PmDbContext context,
             IProjectService projectService,
-            IProjectQueryService projectQueryService
+            IProjectQueryService projectQueryService,
+            IProjectTaskService _projectTaskService
          )
         {
             _context = context;
             _projectCommandService = projectService;
             _projectQueryService = projectQueryService;
+            _projectTaskCommandService = _projectTaskService;
         }
 
         [HttpPost]
@@ -246,5 +248,43 @@ namespace pm_backend.Controllers
                     "An unexpected error occurred while publishing the project.");
             }
         }
+
+        [HttpPost("{projectId}/tasks")]
+        [Authorize]
+        [ProducesResponseType(typeof(ProjectTask), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateTask(int projectId, CreateProjectTaskRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (projectId <= 0)
+                return BadRequest("Invalid project id.");
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                request.ProjectId = projectId;
+
+                var task = await _projectTaskCommandService.CreateTaskAsync(request, userEmail);
+
+                return Created($"/api/projects/{projectId}/tasks/{task.Id}", task);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while creating the task.");
+            }
+        }
+
     }
 }

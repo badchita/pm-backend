@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace pm_backend.Models
 {
@@ -33,5 +34,9 @@ namespace pm_backend.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? DueDate { get; set; }
+
+        [JsonIgnore]
+        public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
+
     }
 }
