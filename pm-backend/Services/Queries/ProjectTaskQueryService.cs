@@ -24,7 +24,7 @@ namespace pm_backend.Services.Queries
             if (!projectExists)
                 throw new KeyNotFoundException($"Project with id {projectId} not found.");
 
-            IQueryable<ProjectTask> tasks = _context.ProjectTask
+            IQueryable<ProjectTask> tasks = _context.ProjectTasks
                 .Where(t => t.ProjectId == projectId);
 
             if (!string.IsNullOrWhiteSpace(query.Search))

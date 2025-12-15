@@ -82,6 +82,9 @@ namespace pm_backend.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -129,7 +132,7 @@ namespace pm_backend.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectTask");
+                    b.ToTable("ProjectTasks");
                 });
 
             modelBuilder.Entity("pm_backend.Models.User", b =>

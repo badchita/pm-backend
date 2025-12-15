@@ -29,6 +29,7 @@ namespace pm_backend.Models
         public DateTime? DoneDate { get; set; }
         public DateTime? TestingStartDate { get; set; }
         public DateTime? TestingEndDate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [MaxLength(255)]
         public string CreatedBy { get; set; } = string.Empty;
