@@ -18,18 +18,21 @@ namespace pm_backend.Controllers
         private readonly IProjectService _projectCommandService;
         private readonly IProjectQueryService _projectQueryService;
         private readonly IProjectTaskService _projectTaskCommandService;
+        private readonly IProjectTaskQueryService _projectTaskQueryService;
 
         public ProjectController(
             PmDbContext context,
             IProjectService projectService,
             IProjectQueryService projectQueryService,
-            IProjectTaskService _projectTaskService
+            IProjectTaskService projectTaskService,
+            IProjectTaskQueryService projectTaskQueryService
          )
         {
             _context = context;
             _projectCommandService = projectService;
             _projectQueryService = projectQueryService;
-            _projectTaskCommandService = _projectTaskService;
+            _projectTaskCommandService = projectTaskService;
+            _projectTaskQueryService = projectTaskQueryService;
         }
 
         [HttpPost]
@@ -283,6 +286,45 @@ namespace pm_backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "An unexpected error occurred while creating the task.");
+            }
+        }
+
+        [HttpGet("{projectId}/tasks")]
+        [Authorize]
+        [ProducesResponseType(typeof(PagedResult<ProjectTask>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetProjectTasks(int projectId,[FromQuery] ProjectTaskListQuery query)
+        {
+            if (projectId <= 0)
+                return BadRequest("Invalid project id.");
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var result = await _projectTaskQueryService
+                    .GetProjectTasksAsync(projectId, query, userEmail);
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                     ex.Message
+                );
             }
         }
 
