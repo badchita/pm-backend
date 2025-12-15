@@ -328,5 +328,42 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpGet("{projectId}/tasks/{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProjectTaskById(int projectId, int id)
+        {
+            if (projectId <= 0)
+                return BadRequest("Invalid project id.");
+
+            if (id <= 0)
+                return BadRequest("Invalid task id.");
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var task = await _projectTaskCommandService.GetTaskByIdAsync(projectId, id, userEmail);
+
+                if (task == null)
+                    return NotFound($"Task with id {id} was not found.");
+
+                return Ok(task);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving the project.");
+            }
+        }
     }
 }
