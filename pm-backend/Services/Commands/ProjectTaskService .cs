@@ -49,13 +49,13 @@ namespace pm_backend.Services.Commands
             return task;
         }
 
-        public async Task<ProjectTask?> GetTaskByIdAsync(int id, string userEmail)
+        public async Task<ProjectTask?> GetTaskByIdAsync(int id, int projectId, string userEmail)
         {
             if (string.IsNullOrWhiteSpace(userEmail))
                 throw new UnauthorizedAccessException("User not authorized.");
 
             var task = await _context.ProjectTasks
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId);
 
             return task;
         }
