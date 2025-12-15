@@ -39,7 +39,7 @@ namespace pm_backend.Services.Commands
                 TaskIdNumber = $"TSK-{Guid.NewGuid().ToString()[..8].ToUpper()}"
             };
 
-            _context.ProjectTask.Add(task);
+            _context.ProjectTasks.Add(task);
             await _context.SaveChangesAsync();
 
             return task;

@@ -12,8 +12,8 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20251209083651_CreateProjectTaskTable")]
-    partial class CreateProjectTaskTable
+    [Migration("20251215070250_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,6 +85,9 @@ namespace pm_backend.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -132,7 +135,7 @@ namespace pm_backend.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectTask");
+                    b.ToTable("ProjectTasks");
                 });
 
             modelBuilder.Entity("pm_backend.Models.User", b =>
