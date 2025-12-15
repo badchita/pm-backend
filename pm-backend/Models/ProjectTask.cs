@@ -22,6 +22,7 @@ namespace pm_backend.Models
 
         [MaxLength(50)]
         public string TaskIdNumber { get; set; } = string.Empty;
+        public int TaskSequence { get; set; }
 
         public TaskState State { get; set; } = TaskState.New;
 

@@ -118,6 +118,9 @@ namespace pm_backend.Migrations
                     b.Property<int?>("TaskPoints")
                         .HasColumnType("int");
 
+                    b.Property<int>("TaskSequence")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("TestingEndDate")
                         .HasColumnType("datetime2");
 
