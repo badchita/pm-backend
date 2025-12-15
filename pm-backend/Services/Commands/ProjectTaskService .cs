@@ -23,6 +23,8 @@ namespace pm_backend.Services.Commands
             if (project == null)
                 throw new KeyNotFoundException("Project not found.");
 
+            var (taskNumber, taskSequence) = await GenerateTaskNumberAsync(request.ProjectId);
+
             var task = new ProjectTask
             {
                 ProjectId = request.ProjectId,
@@ -36,13 +38,36 @@ namespace pm_backend.Services.Commands
                 TestingStartDate = request.TestingStartDate,
                 TestingEndDate = request.TestingEndDate,
                 CreatedBy = userEmail,
-                TaskIdNumber = $"TSK-{Guid.NewGuid().ToString()[..8].ToUpper()}"
+                TaskIdNumber = taskNumber,
+                TaskSequence = taskSequence,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.ProjectTasks.Add(task);
             await _context.SaveChangesAsync();
 
             return task;
+        }
+
+        private async Task<(string taskNumber, int taskSequence)> GenerateTaskNumberAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => new { p.ProjectIdNumber })
+                .FirstOrDefaultAsync();
+
+            if (project == null)
+                throw new KeyNotFoundException("Project not found.");
+
+            var lastSequence = await _context.ProjectTasks
+                .Where(t => t.ProjectId == projectId)
+                .MaxAsync(t => (int?)t.TaskSequence) ?? 0;
+
+            var nextSequence = lastSequence + 1;
+
+            var taskNumber = $"{project.ProjectIdNumber}-T{nextSequence:D2}";
+
+            return (taskNumber, nextSequence);
         }
     }
 }

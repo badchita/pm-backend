@@ -12,7 +12,7 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20251215070250_InitialCreate")]
+    [Migration("20251215120448_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -119,6 +119,9 @@ namespace pm_backend.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("TaskPoints")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskSequence")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("TestingEndDate")
