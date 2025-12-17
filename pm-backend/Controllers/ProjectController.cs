@@ -348,7 +348,7 @@ namespace pm_backend.Controllers
                     .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
                     ?? "system@local";
 
-                var task = await _projectTaskCommandService.GetTaskByIdAsync(projectId, id, userEmail);
+                var task = await _projectTaskCommandService.GetTaskByIdAsync(id, projectId, userEmail);
 
                 if (task == null)
                     return NotFound($"Task with id {id} was not found.");
