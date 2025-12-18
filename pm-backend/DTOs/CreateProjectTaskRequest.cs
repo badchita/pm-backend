@@ -9,6 +9,7 @@
         public string? AcceptanceCriteria { get; set; }
         public string? AssignedTo { get; set; }
         public int? TaskPoints { get; set; }
+        public int State { get; set; }
 
         public DateTime? ReadyForDevelopmentDate { get; set; }
         public DateTime? DoneDate { get; set; }

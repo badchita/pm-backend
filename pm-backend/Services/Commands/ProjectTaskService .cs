@@ -1,8 +1,9 @@
-﻿using pm_backend.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using pm_backend.Data;
+using pm_backend.DTOs;
 using pm_backend.DTOs.Tasks;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
-using Microsoft.EntityFrameworkCore;
 
 namespace pm_backend.Services.Commands
 {
@@ -56,6 +57,32 @@ namespace pm_backend.Services.Commands
 
             var task = await _context.ProjectTasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId);
+
+            return task;
+        }
+        public async Task<ProjectTask?> UpdateTaskAsync(int id, int projectId, CreateProjectTaskRequest request, string userEmail)
+        {
+            if (string.IsNullOrWhiteSpace(userEmail))
+                throw new UnauthorizedAccessException("User not authorized.");
+
+            var task = await _context.ProjectTasks.FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId);
+
+            if (task == null)
+                return null;
+
+            task.ProjectId = request.ProjectId;
+            task.TaskName = request.TaskName;
+            task.Description = request.Description;
+            task.AcceptanceCriteria = request.AcceptanceCriteria;
+            task.AssignedTo = request.AssignedTo;
+            task.TaskPoints = request.TaskPoints;
+            task.ReadyForDevelopmentDate = request.ReadyForDevelopmentDate;
+            task.DoneDate = request.DoneDate;
+            task.TestingStartDate = request.TestingStartDate;
+            task.TestingEndDate = request.TestingEndDate;
+            task.State = (TaskState)request.State;
+
+            await _context.SaveChangesAsync();
 
             return task;
         }

@@ -365,5 +365,47 @@ namespace pm_backend.Controllers
                     "An unexpected error occurred while retrieving the project.");
             }
         }
+
+        [HttpPut("{projectId}/tasks/{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateProjectTask(int id, int projectId, CreateProjectTaskRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (projectId <= 0)
+                return BadRequest("Invalid project id.");
+
+            if (id <= 0)
+                return BadRequest("Invalid task id.");
+
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var updatedProjectTask = await _projectTaskCommandService.UpdateTaskAsync(id, projectId, request, userEmail);
+
+                if (updatedProjectTask == null)
+                    return NotFound($"Task with id {id} was not found.");
+
+                return Ok(updatedProjectTask);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while updating the project.");
+            }
+        }
     }
 }
