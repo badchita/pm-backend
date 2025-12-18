@@ -80,6 +80,7 @@ namespace pm_backend.Services.Commands
             task.DoneDate = request.DoneDate;
             task.TestingStartDate = request.TestingStartDate;
             task.TestingEndDate = request.TestingEndDate;
+            task.State = (TaskState)request.State;
 
             await _context.SaveChangesAsync();
 
