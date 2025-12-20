@@ -15,9 +15,9 @@ namespace pm_backend.Services.Commands
             _context = context;
         }
 
-        public async Task<TaskComment> CreateTaskCommentAsync(CreateTaskCommentRequest request)
+        public async Task<TaskComment> CreateTaskCommentAsync(CreateTaskCommentRequest request, int taskId)
         {
-            var task = await _context.ProjectTasks.FirstOrDefaultAsync(t => t.Id == request.TaskId);
+            var task = await _context.ProjectTasks.FirstOrDefaultAsync(t => t.Id == taskId);
 
             if (task == null)
                 throw new KeyNotFoundException("Task not found.");
@@ -31,7 +31,7 @@ namespace pm_backend.Services.Commands
             {
                 Content = request.Content,
                 UserId = request.UserId,
-                TaskId = request.TaskId,
+                TaskId = taskId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -40,6 +40,13 @@ namespace pm_backend.Services.Commands
 
             await _context.Entry(taskComment).Reference(c => c.User).LoadAsync();
             await _context.Entry(taskComment).Reference(c => c.Task).LoadAsync();
+
+            taskComment.User = new User
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            };
 
             return taskComment;
         }

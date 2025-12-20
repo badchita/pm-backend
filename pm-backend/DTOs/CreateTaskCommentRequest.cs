@@ -8,7 +8,5 @@ namespace pm_backend.DTOs
         public string Content { get; set; } = null!;
         [Required]
         public int UserId { get; set; }
-        [Required]
-        public int TaskId { get; set; }
     }
 }
