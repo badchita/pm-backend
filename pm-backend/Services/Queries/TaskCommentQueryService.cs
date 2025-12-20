@@ -20,7 +20,7 @@ namespace pm_backend.Services.Queries
               .Where(c => c.TaskId == taskId)
               .Include(c => c.User)
               .Include(c => c.Task)
-              .OrderBy(c => c.CreatedAt)
+              .OrderByDescending(c => c.CreatedAt)
               .AsNoTracking()
               .ToListAsync();
         }
