@@ -12,8 +12,8 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20251220030209_TaskComment")]
-    partial class TaskComment
+    [Migration("20251221100923_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,38 @@ namespace pm_backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("TaskStateHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("NewState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreviousState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskStateHistories");
+                });
 
             modelBuilder.Entity("pm_backend.Models.Project", b =>
                 {
@@ -197,6 +229,17 @@ namespace pm_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TaskStateHistory", b =>
+                {
+                    b.HasOne("pm_backend.Models.ProjectTask", "Task")
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("pm_backend.Models.ProjectTask", b =>

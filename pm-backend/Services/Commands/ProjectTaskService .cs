@@ -69,6 +69,8 @@ namespace pm_backend.Services.Commands
             if (task == null)
                 return null;
 
+            var previousState = task.State;
+
             task.ProjectId = request.ProjectId;
             task.TaskName = request.TaskName;
             task.Description = request.Description;
@@ -80,6 +82,19 @@ namespace pm_backend.Services.Commands
             task.TestingStartDate = request.TestingStartDate;
             task.TestingEndDate = request.TestingEndDate;
             task.State = (TaskState)request.State;
+
+            if (previousState != task.State)
+            {
+                var history = new TaskStateHistory
+                {
+                    TaskId = task.Id,
+                    PreviousState = previousState,
+                    NewState = task.State,
+                    ChangedBy = userEmail,
+                    ChangedAt = DateTime.UtcNow
+                };
+                _context.TaskStateHistories.Add(history);
+            }
 
             await _context.SaveChangesAsync();
 
