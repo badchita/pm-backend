@@ -76,6 +76,7 @@ namespace pm_backend
             builder.Services.AddScoped<IProjectTaskQueryService, ProjectTaskQueryService>();
             builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
             builder.Services.AddScoped<ITaskCommentQueryService, TaskCommentQueryService>();
+            builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 
             var app = builder.Build();
 
