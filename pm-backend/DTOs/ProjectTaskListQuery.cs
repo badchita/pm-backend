@@ -7,6 +7,7 @@
 
         public string? Search { get; set; }
         public string? State { get; set; }
+        public string? AssignedTo { get; set; }
 
         public string? SortBy { get; set; } = "createdAt";
         public string? SortDirection { get; set; } = "desc";

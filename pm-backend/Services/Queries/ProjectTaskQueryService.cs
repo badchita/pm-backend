@@ -44,6 +44,11 @@ namespace pm_backend.Services.Queries
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(query.AssignedTo))
+            {
+                tasks = tasks.Where(p => p.AssignedTo == query.AssignedTo);
+            }
+
             var sortBy = query.SortBy?.ToLower();
             var sortDirection = query.SortDirection?.Trim().ToLower() == "asc" ? "asc" : "desc";
 
