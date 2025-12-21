@@ -2,8 +2,6 @@
 using pm_backend.Data;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace pm_backend.Services.Queries
 {
@@ -16,7 +14,7 @@ namespace pm_backend.Services.Queries
             _context = context;
         }
 
-        public async Task<IReadOnlyList<User>> GetAllUsers(string search)
+        public async Task<IReadOnlyList<User>> GetAllUsers(string? search)
         {
             IQueryable<User> query = _context.Users;
 
