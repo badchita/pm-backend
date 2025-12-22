@@ -1,6 +1,5 @@
 ﻿using pm_backend.Models;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 public class TaskStateHistory
 {
@@ -10,11 +9,7 @@ public class TaskStateHistory
     [Required]
     public int TaskId { get; set; }
 
-    [ForeignKey("TaskId")]
-    public ProjectTask Task { get; set; }
-
-    [Required]
-    public TaskState PreviousState { get; set; }
+    public TaskState? PreviousState { get; set; } = null;
 
     [Required]
     public TaskState NewState { get; set; }

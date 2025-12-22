@@ -46,6 +46,16 @@ namespace pm_backend.Services.Commands
             _context.ProjectTasks.Add(task);
             await _context.SaveChangesAsync();
 
+            var history = new TaskStateHistory
+            {
+                TaskId = task.Id,
+                NewState = task.State,
+                ChangedBy = userEmail,
+                ChangedAt = DateTime.UtcNow
+            };
+            _context.TaskStateHistories.Add(history);
+            await _context.SaveChangesAsync();
+
             return task;
         }
 
