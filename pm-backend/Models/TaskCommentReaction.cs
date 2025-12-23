@@ -9,10 +9,10 @@ namespace pm_backend.Models
 
         [ForeignKey("TaskComment")]
         public int TaskCommentId { get; set; }
-        public TaskComment TaskComment { get; set; } = null!;
 
         [Required]
         public int UserId { get; set; }
+        public User User { get; set; } = null!;
 
         public CommentReactionType? ReactionType { get; set; }
 

@@ -17,6 +17,7 @@ namespace pm_backend.Models
         [JsonIgnore]
         public string PasswordHash { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public ICollection<TaskCommentReaction> TaskCommentReactions { get; set; }= new List<TaskCommentReaction>();
     }
 }
