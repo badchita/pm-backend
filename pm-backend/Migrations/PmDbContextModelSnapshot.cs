@@ -293,13 +293,15 @@ namespace pm_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("pm_backend.Models.User", null)
+                    b.HasOne("pm_backend.Models.User", "User")
                         .WithMany("TaskCommentReactions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TaskComment");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("pm_backend.Models.Project", b =>

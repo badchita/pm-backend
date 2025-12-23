@@ -17,12 +17,13 @@ namespace pm_backend.Services.Queries
         public async Task<IReadOnlyList<TaskComment>> GetAllTaskCommentsAsync(int taskId)
         {
             return await _context.TaskComments
-              .Where(c => c.TaskId == taskId)
-              .Include(c => c.User)
-              .Include(c => c.Task)
-              .OrderByDescending(c => c.CreatedAt)
-              .AsNoTracking()
-              .ToListAsync();
+                .Where(c => c.TaskId == taskId)
+                .Include(c => c.User)
+                .Include(c => c.Reactions)
+                    .ThenInclude(r => r.User)
+                .OrderByDescending(c => c.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
