@@ -12,5 +12,6 @@ namespace pm_backend.Data
         public DbSet<ProjectTask> ProjectTasks { get; set; }
         public DbSet<TaskComment> TaskComments { get; set; }
         public DbSet<TaskStateHistory> TaskStateHistories { get; set; }
+        public DbSet<TaskCommentReaction> TaskCommentReactions { get; set; }
     }
 }

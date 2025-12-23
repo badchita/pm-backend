@@ -12,8 +12,8 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20251221153827_UpdateTaskStateHistory")]
-    partial class UpdateTaskStateHistory
+    [Migration("20251223030831_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -204,6 +204,35 @@ namespace pm_backend.Migrations
                     b.ToTable("TaskComments");
                 });
 
+            modelBuilder.Entity("pm_backend.Models.TaskCommentReaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReactionType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TaskCommentReactions");
+                });
+
             modelBuilder.Entity("pm_backend.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -259,9 +288,36 @@ namespace pm_backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("pm_backend.Models.TaskCommentReaction", b =>
+                {
+                    b.HasOne("pm_backend.Models.TaskComment", "TaskComment")
+                        .WithMany("Reactions")
+                        .HasForeignKey("TaskCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("pm_backend.Models.User", null)
+                        .WithMany("TaskCommentReactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskComment");
+                });
+
             modelBuilder.Entity("pm_backend.Models.Project", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("pm_backend.Models.TaskComment", b =>
+                {
+                    b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("pm_backend.Models.User", b =>
+                {
+                    b.Navigation("TaskCommentReactions");
                 });
 #pragma warning restore 612, 618
         }
