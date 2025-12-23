@@ -4,6 +4,7 @@ using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries.Contracts;
+using System.Threading.Tasks;
 
 namespace pm_backend.Controllers
 {
@@ -14,16 +15,19 @@ namespace pm_backend.Controllers
         private readonly ITaskCommentService _taskCommentCommandService;
         private readonly ITaskCommentQueryService _taskCommentQueryService;
         private readonly ITaskStateHistoryQueryService _taskStateHistoryQueryService;
+        private readonly ITaskCommentReactionService _taskCommentReactionService;
 
         public TaskController(
             ITaskCommentService taskCommentCommandService,
             ITaskCommentQueryService taskCommentQueryService,
-            ITaskStateHistoryQueryService taskStateHistoryQueryService
+            ITaskStateHistoryQueryService taskStateHistoryQueryService,
+            ITaskCommentReactionService taskCommentReactionService
         )
         {
             _taskCommentCommandService = taskCommentCommandService;
             _taskCommentQueryService = taskCommentQueryService;
             _taskStateHistoryQueryService = taskStateHistoryQueryService;
+            _taskCommentReactionService = taskCommentReactionService;
         }
 
         [HttpPost("{taskId}/comments")]
@@ -119,6 +123,38 @@ namespace pm_backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "An unexpected error occurred while getting task history.");
+            }
+        }
+
+        [HttpPut("{taskId}/comments/{taskCommentId}/reactions")]
+        [Authorize]
+        [ProducesResponseType(typeof(TaskComment), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateTaskCommentReaction(int taskId, int taskCommentId, TaskCommentReactionRequest taskCommentReactionRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (taskId <= 0)
+                return BadRequest("Invalid taskId id.");
+
+            try
+            {
+
+                await _taskCommentReactionService.UpdateTaskCommentReactionAsync(taskCommentReactionRequest, taskId, taskCommentId);
+
+                return Ok(NoContent());
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while creating the task.");
             }
         }
     }

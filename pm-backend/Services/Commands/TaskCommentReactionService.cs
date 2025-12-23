@@ -15,10 +15,16 @@ namespace pm_backend.Services.Commands
             _context = context;
         }
 
-        public async Task UpdateTaskCommentReactionAsync(TaskCommentReactionRequest taskCommentReaction)
+        public async Task UpdateTaskCommentReactionAsync(TaskCommentReactionRequest taskCommentReaction, int taskId, int taskCommentId)
         {
+            var taskExists = await _context.ProjectTasks
+                .AnyAsync(c => c.Id == taskId);
+
+            if (!taskExists)
+                throw new KeyNotFoundException("Task comment does not exist.");
+
             var commentExists = await _context.TaskComments
-                .AnyAsync(c => c.Id == taskCommentReaction.TaskCommentId);
+                .AnyAsync(c => c.Id == taskCommentId);
 
             if (!commentExists)
                 throw new KeyNotFoundException("Task comment does not exist.");
@@ -42,7 +48,7 @@ namespace pm_backend.Services.Commands
             {
                 var reaction = new TaskCommentReaction
                 {
-                    TaskCommentId = taskCommentReaction.TaskCommentId,
+                    TaskCommentId = taskCommentId,
                     UserId = taskCommentReaction.UserId,
                     ReactionType = taskCommentReaction.ReactionType,
                     CreatedAt = DateTime.UtcNow
