@@ -1,27 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using pm_backend.Models;
 
-namespace pm_backend.Models
+namespace pm_backend.DTOs
 {
-    public class TaskCommentReaction
+    public class TaskCommentReactionRequest
     {
         public int Id { get; set; }
-
-        [ForeignKey("TaskComment")]
         public int TaskCommentId { get; set; }
         public TaskComment TaskComment { get; set; } = null!;
-
-        [Required]
         public int UserId { get; set; }
-
         public CommentReactionType? ReactionType { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
-
-    public enum CommentReactionType
-    {
-        Like = 1,
-        Dislike = 2
     }
 }
