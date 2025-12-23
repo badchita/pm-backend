@@ -32,6 +32,23 @@ namespace pm_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TaskStateHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    PreviousState = table.Column<int>(type: "int", nullable: true),
+                    NewState = table.Column<int>(type: "int", nullable: false),
+                    ChangedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskStateHistories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -110,32 +127,47 @@ namespace pm_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TaskStateHistories",
+                name: "TaskCommentReactions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskId = table.Column<int>(type: "int", nullable: false),
-                    PreviousState = table.Column<int>(type: "int", nullable: false),
-                    NewState = table.Column<int>(type: "int", nullable: false),
-                    ChangedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    TaskCommentId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ReactionType = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskStateHistories", x => x.Id);
+                    table.PrimaryKey("PK_TaskCommentReactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskStateHistories_ProjectTasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "ProjectTasks",
+                        name: "FK_TaskCommentReactions_TaskComments_TaskCommentId",
+                        column: x => x.TaskCommentId,
+                        principalTable: "TaskComments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskCommentReactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectTasks_ProjectId",
                 table: "ProjectTasks",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskCommentReactions_TaskCommentId",
+                table: "TaskCommentReactions",
+                column: "TaskCommentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskCommentReactions_UserId",
+                table: "TaskCommentReactions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskComments_TaskId",
@@ -146,27 +178,25 @@ namespace pm_backend.Migrations
                 name: "IX_TaskComments_UserId",
                 table: "TaskComments",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskStateHistories_TaskId",
-                table: "TaskStateHistories",
-                column: "TaskId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskComments");
+                name: "TaskCommentReactions");
 
             migrationBuilder.DropTable(
                 name: "TaskStateHistories");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "TaskComments");
 
             migrationBuilder.DropTable(
                 name: "ProjectTasks");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Projects");
