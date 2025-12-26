@@ -3,6 +3,7 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
+using System.Threading.Tasks;
 
 namespace pm_backend.Services.Queries
 {
@@ -86,6 +87,36 @@ namespace pm_backend.Services.Queries
                 Page = query.Page,
                 PageSize = query.PageSize
             };
+        }
+
+        public async Task<ProjectTaskBoardResponse?> GetProjectWithTasksAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Tasks)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null) return null;
+
+            var response = new ProjectTaskBoardResponse
+            {
+                Id = project.Id,
+                ProjectIdNumber = project.ProjectIdNumber,
+                ProjectName = project.ProjectName,
+                Tasks = project.Tasks.Select(t => new ProjectTaskDto
+                {
+                    Id = t.Id,
+                    TaskName = t.TaskName,
+                    Description = t.Description,
+                    AssignedTo = t.AssignedTo,
+                    TaskIdNumber = t.TaskIdNumber,
+                    State = (TaskState)t.State,
+                    CreatedBy = t.CreatedBy,
+                    UpdatedBy = t.UpdatedBy,
+                    ProjectId = t.ProjectId
+                }).ToList()
+            };
+
+            return response;
         }
     }
 }

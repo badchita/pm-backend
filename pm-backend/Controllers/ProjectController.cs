@@ -407,5 +407,29 @@ namespace pm_backend.Controllers
                     "An unexpected error occurred while updating the project.");
             }
         }
+
+        [HttpGet("{projectId}/task-board")]
+        [Authorize]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProjectTaskBoard(int projectId)
+        {
+            try
+            {
+                var result = await _projectQueryService.GetProjectWithTasksAsync(projectId);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving projects.");
+            }
+        }
     }
 }
