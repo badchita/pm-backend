@@ -109,7 +109,7 @@ namespace pm_backend.Services.Queries
                     Description = t.Description,
                     AssignedTo = t.AssignedTo,
                     TaskIdNumber = t.TaskIdNumber,
-                    State = (TaskState)t.State, // explicit cast from int to enum
+                    State = (TaskState)t.State,
                     CreatedBy = t.CreatedBy,
                     UpdatedBy = t.UpdatedBy,
                     ProjectId = t.ProjectId
