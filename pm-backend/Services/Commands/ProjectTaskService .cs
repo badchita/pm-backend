@@ -111,6 +111,35 @@ namespace pm_backend.Services.Commands
             return task;
         }
 
+        public async Task UpdateTaskStateAsync(int taskId, TaskState newState, string userEmail)
+        {
+            var task = await _context.ProjectTasks
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
+                throw new KeyNotFoundException("Task not found.");
+
+            var previousState = task.State;
+
+            task.State = newState;
+            task.UpdatedBy = userEmail;
+
+            if (previousState != task.State)
+            {
+                var history = new TaskStateHistory
+                {
+                    TaskId = task.Id,
+                    PreviousState = previousState,
+                    NewState = task.State,
+                    ChangedBy = userEmail,
+                    ChangedAt = DateTime.UtcNow
+                };
+                _context.TaskStateHistories.Add(history);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
         private async Task<(string taskNumber, int taskSequence)> GenerateTaskNumberAsync(int projectId)
         {
             var project = await _context.Projects
@@ -130,20 +159,6 @@ namespace pm_backend.Services.Commands
             var taskNumber = $"{project.ProjectIdNumber}-T{nextSequence:D2}";
 
             return (taskNumber, nextSequence);
-        }
-
-        public async Task UpdateTaskStateAsync(int taskId, TaskState newState, string userEmail)
-        {
-            var task = await _context.ProjectTasks
-                .FirstOrDefaultAsync(t => t.Id == taskId);
-
-            if (task == null)
-                throw new KeyNotFoundException("Task not found.");
-
-            task.State = newState;
-            task.UpdatedBy = userEmail;
-
-            await _context.SaveChangesAsync();
         }
     }
 }
