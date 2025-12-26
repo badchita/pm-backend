@@ -89,13 +89,34 @@ namespace pm_backend.Services.Queries
             };
         }
 
-        public async Task<Project> GetProjectsTaskAsync(int projectId)
+        public async Task<ProjectTaskBoardResponse?> GetProjectWithTasksAsync(int projectId)
         {
             var project = await _context.Projects
                 .Include(p => p.Tasks)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
-            return project;
+            if (project == null) return null;
+
+            var response = new ProjectTaskBoardResponse
+            {
+                Id = project.Id,
+                ProjectIdNumber = project.ProjectIdNumber,
+                ProjectName = project.ProjectName,
+                Tasks = project.Tasks.Select(t => new ProjectTaskDto
+                {
+                    Id = t.Id,
+                    TaskName = t.TaskName,
+                    Description = t.Description,
+                    AssignedTo = t.AssignedTo,
+                    TaskIdNumber = t.TaskIdNumber,
+                    State = (TaskState)t.State, // explicit cast from int to enum
+                    CreatedBy = t.CreatedBy,
+                    UpdatedBy = t.UpdatedBy,
+                    ProjectId = t.ProjectId
+                }).ToList()
+            };
+
+            return response;
         }
     }
 }

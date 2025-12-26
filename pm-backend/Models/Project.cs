@@ -37,6 +37,5 @@ namespace pm_backend.Models
 
         [JsonIgnore]
         public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
-
     }
 }
