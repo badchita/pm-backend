@@ -131,5 +131,19 @@ namespace pm_backend.Services.Commands
 
             return (taskNumber, nextSequence);
         }
+
+        public async Task UpdateTaskStateAsync(int taskId, TaskState newState, string userEmail)
+        {
+            var task = await _context.ProjectTasks
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
+                throw new KeyNotFoundException("Task not found.");
+
+            task.State = newState;
+            task.UpdatedBy = userEmail;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
