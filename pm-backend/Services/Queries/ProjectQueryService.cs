@@ -3,6 +3,7 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
+using System.Threading.Tasks;
 
 namespace pm_backend.Services.Queries
 {
@@ -86,6 +87,15 @@ namespace pm_backend.Services.Queries
                 Page = query.Page,
                 PageSize = query.PageSize
             };
+        }
+
+        public async Task<Project> GetProjectsTaskAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Tasks)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            return project;
         }
     }
 }
