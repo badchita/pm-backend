@@ -9,10 +9,15 @@ namespace pm_backend.Services.Commands
     public class ProjectTaskService : IProjectTaskService
     {
         private readonly PmDbContext _context;
+        private readonly ITaskStateHistoryService _taskStateHistoryService;
 
-        public ProjectTaskService(PmDbContext context)
+        public ProjectTaskService(
+            PmDbContext context,
+            ITaskStateHistoryService taskStateHistoryCommandService
+        )
         {
             _context = context;
+            _taskStateHistoryService = taskStateHistoryCommandService;
         }
 
         public async Task<ProjectTask> CreateTaskAsync(CreateProjectTaskRequest request, string userEmail)
@@ -93,18 +98,7 @@ namespace pm_backend.Services.Commands
             task.TestingEndDate = request.TestingEndDate;
             task.State = (TaskState)request.State;
 
-            if (previousState != task.State)
-            {
-                var history = new TaskStateHistory
-                {
-                    TaskId = task.Id,
-                    PreviousState = previousState,
-                    NewState = task.State,
-                    ChangedBy = userEmail,
-                    ChangedAt = DateTime.UtcNow
-                };
-                _context.TaskStateHistories.Add(history);
-            }
+            await _taskStateHistoryService.TrackStateChangeAsync(task.Id, previousState, task.State, userEmail);
 
             await _context.SaveChangesAsync();
 
@@ -124,18 +118,7 @@ namespace pm_backend.Services.Commands
             task.State = newState;
             task.UpdatedBy = userEmail;
 
-            if (previousState != task.State)
-            {
-                var history = new TaskStateHistory
-                {
-                    TaskId = task.Id,
-                    PreviousState = previousState,
-                    NewState = task.State,
-                    ChangedBy = userEmail,
-                    ChangedAt = DateTime.UtcNow
-                };
-                _context.TaskStateHistories.Add(history);
-            }
+            await _taskStateHistoryService.TrackStateChangeAsync(task.Id, previousState,task.State, userEmail);
 
             await _context.SaveChangesAsync();
         }
