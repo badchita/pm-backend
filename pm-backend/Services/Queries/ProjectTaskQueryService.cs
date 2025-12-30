@@ -49,20 +49,24 @@ namespace pm_backend.Services.Queries
                 tasks = tasks.Where(p => p.AssignedTo == query.AssignedTo);
             }
 
-            var sortBy = query.SortBy?.ToLower();
+            var sortBy = query.SortBy?.Trim().ToLower();
             var sortDirection = query.SortDirection?.Trim().ToLower() == "asc" ? "asc" : "desc";
 
             tasks = sortBy switch
             {
-                "taskName" => sortDirection == "asc"
-                    ? tasks.OrderBy(p => p.TaskName)
-                    : tasks.OrderByDescending(p => p.TaskName),
+                "taskname" => sortDirection == "asc"
+                        ? tasks.OrderBy(p => p.TaskName).ThenBy(p => p.TaskSequence)
+                        : tasks.OrderByDescending(p => p.TaskName).ThenByDescending(p => p.TaskSequence),
 
-                "taskIdNumber" => sortDirection == "asc"
-                    ? tasks.OrderBy(p => p.TaskIdNumber)
-                    : tasks.OrderByDescending(p => p.TaskIdNumber),
+                "taskidnumber" => sortDirection == "asc"
+                    ? tasks.OrderBy(p => p.TaskSequence)
+                    : tasks.OrderByDescending(p => p.TaskSequence),
 
-                _ => tasks.OrderByDescending(p => p.TaskIdNumber)
+                "createdat" => sortDirection == "asc"
+                    ? tasks.OrderBy(p => p.CreatedAt).ThenBy(p => p.TaskSequence)
+                    : tasks.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.TaskSequence),
+
+                _ => tasks.OrderByDescending(p => p.TaskSequence)
             };
 
             var totalCount = await tasks.CountAsync();
