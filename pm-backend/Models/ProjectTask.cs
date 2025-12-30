@@ -43,6 +43,12 @@ namespace pm_backend.Models
 
         [JsonIgnore]
         public Project Project { get; set; }
+
+        [JsonIgnore]
+        public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
+
+        [JsonIgnore]
+        public ICollection<TaskStateHistory> StateHistories { get; set; } = new List<TaskStateHistory>();
     }
 
     public enum TaskState
