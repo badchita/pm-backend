@@ -11,5 +11,6 @@ namespace pm_backend.Services.Commands.Contracts
         Task<Project?> UpdateProjectAsync(int id, UpdateProjectRequest request, string userEmail);
         Task<Project> PublishProjectAsync(int id, UpdateProjectRequest request, string userEmail);
         Task<Project> UnPublishProjectAsync(int id, string userEmail);
+        Task UpdateIsDeletedAsync(int id, string isDeleted);
     }
 }
