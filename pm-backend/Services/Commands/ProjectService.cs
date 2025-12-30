@@ -117,6 +117,37 @@ namespace pm_backend.Services.Commands
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteProjectAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Tasks)
+                    .ThenInclude(t => t.Comments)
+                        .ThenInclude(c => c.Reactions)
+                .Include(p => p.Tasks)
+                    .ThenInclude(t => t.StateHistories)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+                throw new KeyNotFoundException("Project not found.");
+
+            foreach (var task in project.Tasks)
+            {
+                foreach (var comment in task.Comments)
+                {
+                    _context.TaskCommentReactions.RemoveRange(comment.Reactions);
+                }
+
+                _context.TaskComments.RemoveRange(task.Comments);
+
+                _context.TaskStateHistories.RemoveRange(task.StateHistories);
+            }
+
+            _context.ProjectTasks.RemoveRange(project.Tasks);
+            _context.Projects.Remove(project);
+
+            await _context.SaveChangesAsync();
+        }
+
         private async Task<string> GenerateProjectNumber()
         {
             var latestProject = await _context.Projects
