@@ -290,6 +290,37 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid project id.");
+
+            try
+            {
+                await _projectCommandService.DeleteProjectAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while deleting the project.");
+            }
+        }
+
         [HttpPost("{projectId}/tasks")]
         [Authorize]
         [ProducesResponseType(typeof(ProjectTask), StatusCodes.Status201Created)]
