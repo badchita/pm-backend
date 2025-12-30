@@ -4,6 +4,7 @@ using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace pm_backend.Services.Commands
 {
@@ -96,6 +97,24 @@ namespace pm_backend.Services.Commands
             await _context.SaveChangesAsync();
 
             return project;
+        }
+
+        public async Task UpdateIsDeletedAsync(int id, string isDeleted)
+        {
+            var project = await _context.Projects.FindAsync(id);
+
+            if (project == null)
+                throw new KeyNotFoundException("Project not found.");
+
+            project.IsDeleted= isDeleted;
+
+            if (isDeleted == "Y")
+            {
+                project.IsPublished = "N";
+            }
+
+            _context.Projects.Update(project);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<string> GenerateProjectNumber()
