@@ -108,6 +108,11 @@ namespace pm_backend.Services.Commands
 
             project.IsDeleted= isDeleted;
 
+            if (isDeleted == "Y")
+            {
+                project.IsPublished = "N";
+            }
+
             _context.Projects.Update(project);
             await _context.SaveChangesAsync();
         }

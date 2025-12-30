@@ -211,6 +211,44 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpPut("{id}/isDeleted")]
+        [Authorize]
+        [ProducesResponseType(typeof(ProjectIsDeletedRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UnPublishProject(int id, ProjectIsDeletedRequest projectIsDeleted)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid project id.");
+
+            try
+            {
+            
+                await _projectCommandService.UpdateIsDeletedAsync(id, projectIsDeleted.IsDeleted);
+
+                return Ok(NoContent());
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while updating the project.");
+            }
+        }
+
         [HttpPut("{id}/unpublish")]
         [Authorize]
         [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
