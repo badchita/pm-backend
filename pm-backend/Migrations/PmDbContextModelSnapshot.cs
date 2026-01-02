@@ -44,15 +44,12 @@ namespace pm_backend.Migrations
                     b.Property<int?>("PreviousState")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectTaskId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TaskId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectTaskId");
+                    b.HasIndex("TaskId");
 
                     b.ToTable("TaskStateHistories");
                 });
@@ -226,11 +223,16 @@ namespace pm_backend.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TaskCommentId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("TaskCommentReactions");
                 });
@@ -262,9 +264,13 @@ namespace pm_backend.Migrations
 
             modelBuilder.Entity("TaskStateHistory", b =>
                 {
-                    b.HasOne("pm_backend.Models.ProjectTask", null)
+                    b.HasOne("pm_backend.Models.ProjectTask", "Task")
                         .WithMany("StateHistories")
-                        .HasForeignKey("ProjectTaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("pm_backend.Models.ProjectTask", b =>
@@ -289,7 +295,7 @@ namespace pm_backend.Migrations
                     b.HasOne("pm_backend.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Task");
@@ -299,17 +305,23 @@ namespace pm_backend.Migrations
 
             modelBuilder.Entity("pm_backend.Models.TaskCommentReaction", b =>
                 {
-                    b.HasOne("pm_backend.Models.TaskComment", null)
+                    b.HasOne("pm_backend.Models.TaskComment", "TaskComment")
                         .WithMany("Reactions")
                         .HasForeignKey("TaskCommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("pm_backend.Models.User", "User")
-                        .WithMany("TaskCommentReactions")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("pm_backend.Models.User", null)
+                        .WithMany("TaskCommentReactions")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("TaskComment");
 
                     b.Navigation("User");
                 });

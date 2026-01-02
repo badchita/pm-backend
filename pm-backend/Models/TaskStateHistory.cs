@@ -1,5 +1,6 @@
 ﻿using pm_backend.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class TaskStateHistory
 {
@@ -8,6 +9,9 @@ public class TaskStateHistory
 
     [Required]
     public int TaskId { get; set; }
+
+    [JsonIgnore]
+    public ProjectTask Task { get; set; }
 
     public TaskState? PreviousState { get; set; } = null;
 
