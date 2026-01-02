@@ -3,6 +3,7 @@ using pm_backend.Data;
 using pm_backend.DTOs.Tasks;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
+using System.Threading.Tasks;
 
 namespace pm_backend.Services.Commands
 {
@@ -119,6 +120,29 @@ namespace pm_backend.Services.Commands
             task.UpdatedBy = userEmail;
 
             await _taskStateHistoryService.TrackStateChangeAsync(task.Id, previousState,task.State, userEmail);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteTaskAsync(int taskId)
+        {
+            var task = await _context.ProjectTasks
+                .Include(t => t.Comments)
+                     .ThenInclude(c => c.Reactions)
+                .Include(t => t.StateHistories)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
+                throw new KeyNotFoundException("Task not found.");
+
+            foreach (var comment in task.Comments)
+            {
+                _context.TaskCommentReactions.RemoveRange(comment.Reactions);
+            }
+
+            _context.TaskComments.RemoveRange(task.Comments);
+            _context.TaskStateHistories.RemoveRange(task.StateHistories);
+            _context.ProjectTasks.Remove(task);
 
             await _context.SaveChangesAsync();
         }

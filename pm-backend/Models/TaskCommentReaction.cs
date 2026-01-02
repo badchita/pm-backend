@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace pm_backend.Models
 {
@@ -9,6 +10,8 @@ namespace pm_backend.Models
 
         [ForeignKey("TaskComment")]
         public int TaskCommentId { get; set; }
+        [JsonIgnore]
+        public TaskComment TaskComment { get; set; }
 
         [Required]
         public int UserId { get; set; }

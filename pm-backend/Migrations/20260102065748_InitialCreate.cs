@@ -32,23 +32,6 @@ namespace pm_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TaskStateHistories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskId = table.Column<int>(type: "int", nullable: false),
-                    PreviousState = table.Column<int>(type: "int", nullable: true),
-                    NewState = table.Column<int>(type: "int", nullable: false),
-                    ChangedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskStateHistories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -122,6 +105,28 @@ namespace pm_backend.Migrations
                         name: "FK_TaskComments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskStateHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    PreviousState = table.Column<int>(type: "int", nullable: true),
+                    NewState = table.Column<int>(type: "int", nullable: false),
+                    ChangedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskStateHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskStateHistories_ProjectTasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "ProjectTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -134,8 +139,9 @@ namespace pm_backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskCommentId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    ReactionType = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReactionType = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -150,8 +156,12 @@ namespace pm_backend.Migrations
                         name: "FK_TaskCommentReactions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskCommentReactions_Users_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -170,6 +180,11 @@ namespace pm_backend.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TaskCommentReactions_UserId1",
+                table: "TaskCommentReactions",
+                column: "UserId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TaskComments_TaskId",
                 table: "TaskComments",
                 column: "TaskId");
@@ -178,6 +193,11 @@ namespace pm_backend.Migrations
                 name: "IX_TaskComments_UserId",
                 table: "TaskComments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskStateHistories_TaskId",
+                table: "TaskStateHistories",
+                column: "TaskId");
         }
 
         /// <inheritdoc />
