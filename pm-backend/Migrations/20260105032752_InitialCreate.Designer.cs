@@ -12,7 +12,7 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20260102065748_InitialCreate")]
+    [Migration("20260105032752_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -248,9 +248,16 @@ namespace pm_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IsApproved")
+                        .IsRequired()
+                        .HasColumnType("char(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -259,6 +266,9 @@ namespace pm_backend.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

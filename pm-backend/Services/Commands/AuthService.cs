@@ -39,6 +39,7 @@ namespace pm_backend.Services.Commands
                 {
                     Name = registerForm.Name,
                     Email = registerForm.Email,
+                    Role = registerForm.Role,
                     PasswordHash = PasswordService.Hash(registerForm.Password)
                 };
 
