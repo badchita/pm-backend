@@ -12,7 +12,7 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    [Migration("20260102065748_InitialCreate")]
+    [Migration("20260105064923_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -57,6 +57,34 @@ namespace pm_backend.Migrations
                     b.ToTable("TaskStateHistories");
                 });
 
+            modelBuilder.Entity("pm_backend.Models.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IsApproved")
+                        .IsRequired()
+                        .HasColumnType("char(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies");
+                });
+
             modelBuilder.Entity("pm_backend.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -64,6 +92,9 @@ namespace pm_backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -99,6 +130,8 @@ namespace pm_backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Projects");
                 });
 
@@ -116,6 +149,9 @@ namespace pm_backend.Migrations
                     b.Property<string>("AssignedTo")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -167,6 +203,8 @@ namespace pm_backend.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ProjectId");
 
@@ -248,9 +286,19 @@ namespace pm_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IsApproved")
+                        .IsRequired()
+                        .HasColumnType("char(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -260,7 +308,12 @@ namespace pm_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Users");
                 });
@@ -276,8 +329,23 @@ namespace pm_backend.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("pm_backend.Models.Project", b =>
+                {
+                    b.HasOne("pm_backend.Models.Company", "Company")
+                        .WithMany("Projects")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("pm_backend.Models.ProjectTask", b =>
                 {
+                    b.HasOne("pm_backend.Models.Company", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("CompanyId");
+
                     b.HasOne("pm_backend.Models.Project", "Project")
                         .WithMany("Tasks")
                         .HasForeignKey("ProjectId")
@@ -327,6 +395,24 @@ namespace pm_backend.Migrations
                     b.Navigation("TaskComment");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("pm_backend.Models.User", b =>
+                {
+                    b.HasOne("pm_backend.Models.Company", "Company")
+                        .WithMany("Users")
+                        .HasForeignKey("CompanyId");
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("pm_backend.Models.Company", b =>
+                {
+                    b.Navigation("Projects");
+
+                    b.Navigation("Tasks");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("pm_backend.Models.Project", b =>

@@ -39,8 +39,24 @@ namespace pm_backend.Services.Commands
                 {
                     Name = registerForm.Name,
                     Email = registerForm.Email,
+                    Role = registerForm.Role,
                     PasswordHash = PasswordService.Hash(registerForm.Password)
                 };
+
+                if (registerForm.Role == UserRole.Manager && !string.IsNullOrWhiteSpace(registerForm.CompanyName))
+                {
+                    var company = new Company
+                    {
+                        Name = registerForm.CompanyName,
+                        IsApproved = "N",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
+
+                    user.CompanyId = company.Id;
+                }
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
@@ -70,6 +86,11 @@ namespace pm_backend.Services.Commands
             if (!validPassword)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
+            var isApprove = user.IsApproved;
+
+            if (isApprove == "N")
+                throw new UnauthorizedAccessException("User not yet approved.");
+
             var token = GenerateJwtToken(user);
 
             return new LoginResponse
@@ -79,7 +100,11 @@ namespace pm_backend.Services.Commands
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    Email = user.Email
+                    Email = user.Email,
+                    Role = user.Role,
+                    IsApproved = user.IsApproved,
+                    CompanyId = user.CompanyId,
+                    Company = user.Company,
                 }
             };
         }

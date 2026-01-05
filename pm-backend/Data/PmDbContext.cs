@@ -13,6 +13,7 @@ namespace pm_backend.Data
         public DbSet<TaskComment> TaskComments { get; set; }
         public DbSet<TaskStateHistory> TaskStateHistories { get; set; }
         public DbSet<TaskCommentReaction> TaskCommentReactions { get; set; }
+        public DbSet<Company> Companies{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
