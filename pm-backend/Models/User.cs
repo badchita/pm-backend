@@ -15,6 +15,8 @@ namespace pm_backend.Models
         public string Email { get; set; } = string.Empty;
 
         public int? CompanyId { get; set; }
+
+        [JsonIgnore]
         public Company? Company { get; set; }
 
         [Required]

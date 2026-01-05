@@ -43,6 +43,21 @@ namespace pm_backend.Services.Commands
                     PasswordHash = PasswordService.Hash(registerForm.Password)
                 };
 
+                if (registerForm.Role == UserRole.Manager && !string.IsNullOrWhiteSpace(registerForm.CompanyName))
+                {
+                    var company = new Company
+                    {
+                        Name = registerForm.CompanyName,
+                        IsApproved = "N",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
+
+                    user.CompanyId = company.Id;
+                }
+
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
