@@ -14,6 +14,9 @@ namespace pm_backend.Models
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
+        public int? CompanyId { get; set; }
+        public Company? Company { get; set; }
+
         [Required]
         [JsonIgnore]
         public string PasswordHash { get; set; } = string.Empty;

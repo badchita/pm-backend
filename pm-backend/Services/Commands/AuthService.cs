@@ -71,6 +71,11 @@ namespace pm_backend.Services.Commands
             if (!validPassword)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
+            var isApprove = user.IsApproved;
+
+            if (isApprove == "N")
+                throw new UnauthorizedAccessException("User not yet approved.");
+
             var token = GenerateJwtToken(user);
 
             return new LoginResponse
@@ -80,7 +85,11 @@ namespace pm_backend.Services.Commands
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    Email = user.Email
+                    Email = user.Email,
+                    Role = user.Role,
+                    IsApproved = user.IsApproved,
+                    CompanyId = user.CompanyId,
+                    Company = user.Company,
                 }
             };
         }

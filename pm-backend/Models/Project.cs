@@ -18,6 +18,8 @@ namespace pm_backend.Models
         public string ProjectName { get; set; } = null!;
 
         public string? Description { get; set; }
+        public int CompanyId { get; set; }
+        public Company Company { get; set; } = null!;
 
         [Required]
         [MaxLength(255)]
