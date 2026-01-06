@@ -16,7 +16,6 @@ namespace pm_backend.Models
 
         public int? CompanyId { get; set; }
 
-        [JsonIgnore]
         public Company? Company { get; set; }
 
         [Required]

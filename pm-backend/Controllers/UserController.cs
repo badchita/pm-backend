@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.DTOs;
 using pm_backend.Models;
-using pm_backend.Services.Queries;
 using pm_backend.Services.Queries.Contracts;
 using System.Security.Claims;
 
@@ -48,7 +47,7 @@ namespace pm_backend.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(PagedResult<User>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

@@ -6,6 +6,7 @@ using pm_backend.Services.Commands;
 using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries;
 using pm_backend.Services.Queries.Contracts;
+using System.Security.Claims;
 using System.Text;
 
 namespace pm_backend
@@ -50,7 +51,8 @@ namespace pm_backend
                     ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "pm-backend",
                     ValidAudience = builder.Configuration["JwtSettings:Audience"] ?? "pm-frontend",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = ClaimTypes.Role
                 };
             });
 

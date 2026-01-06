@@ -76,6 +76,7 @@ namespace pm_backend.Services.Commands
         public async Task<LoginResponse> Login(LoginRequest request)
         {
             var user = await _context.Users
+                .Include(u => u.Company)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
@@ -119,6 +120,7 @@ namespace pm_backend.Services.Commands
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
