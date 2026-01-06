@@ -29,6 +29,7 @@ namespace pm_backend.Models
         [Required]
         [Column(TypeName = "char(1)")]
         public string IsApproved { get; set; } = "N";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]

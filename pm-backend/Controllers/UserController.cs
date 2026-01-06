@@ -31,7 +31,7 @@ namespace pm_backend.Controllers
             try
             {
 
-                var result = await _userQueryService.GetAllUsers(search);
+                var result = await _userQueryService.GetAllUsersAsync(search);
 
                 return Ok(result);
             }
