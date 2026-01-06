@@ -34,6 +34,11 @@ namespace pm_backend.Services.Queries
         {
             IQueryable<User> users = _context.Users.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(userEmail))
+            {
+                users = users.Where(u => u.Email != userEmail);
+            }
+
             if (!string.IsNullOrWhiteSpace(query.Search))
             {
                 users = users.Where(p =>

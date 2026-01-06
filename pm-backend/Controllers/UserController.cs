@@ -4,6 +4,7 @@ using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries;
 using pm_backend.Services.Queries.Contracts;
+using System.Security.Claims;
 
 namespace pm_backend.Controllers
 {
@@ -43,6 +44,34 @@ namespace pm_backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "An unexpected error occurred while getting users.");
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [ProducesResponseType(typeof(PagedResult<User>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsers([FromQuery] UserListQuery query)
+        {
+            try
+            {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
+
+                var result = await _userQueryService.GetUsersAsync(query, userEmail);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving users.");
             }
         }
     }
