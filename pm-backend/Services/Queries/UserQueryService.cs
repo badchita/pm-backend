@@ -65,6 +65,11 @@ namespace pm_backend.Services.Queries
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(query.IsDeleted))
+            {
+                users = users.Where(p => p.IsDeleted == query.IsDeleted);
+            }
+
             var sortBy = query.SortBy?.Trim().ToLower();
             var sortDirection = query.SortDirection?.Trim().ToLower() == "asc" ? "asc" : "desc";
 

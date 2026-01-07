@@ -218,7 +218,7 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UnPublishProject(int id, ProjectIsDeletedRequest projectIsDeleted)
+        public async Task<IActionResult> UpdateIsDeleted(int id, ProjectIsDeletedRequest projectIsDeleted)
         {
             if (id <= 0)
                 return BadRequest("Invalid project id.");
