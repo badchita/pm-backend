@@ -6,6 +6,6 @@ namespace pm_backend.Services.Queries.Contracts
     public interface IProjectQueryService
     {
         Task<PagedResult<Project>> GetProjectsAsync(ProjectListQuery query, string userEmail);
-        Task<ProjectTaskBoardDTO?> GetProjectWithTasksAsync(int projectId);
+        Task<ProjectTaskBoardResponse?> GetProjectWithTasksAsync(int projectId);
     }
 }

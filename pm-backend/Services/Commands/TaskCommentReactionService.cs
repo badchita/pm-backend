@@ -15,7 +15,7 @@ namespace pm_backend.Services.Commands
             _context = context;
         }
 
-        public async Task UpdateTaskCommentReactionAsync(TaskCommentReactionDTO taskCommentReaction, int taskId, int taskCommentId)
+        public async Task UpdateTaskCommentReactionAsync(TaskCommentReactionRequest taskCommentReaction, int taskId, int taskCommentId)
         {
             var taskExists = await _context.ProjectTasks
                 .AnyAsync(c => c.Id == taskId);

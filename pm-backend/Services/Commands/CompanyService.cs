@@ -16,7 +16,7 @@ namespace pm_backend.Services.Commands
             _context = context;
         }
 
-        public async Task<Company> CreateCompanyAsync(CreateCompanyDTO request)
+        public async Task<Company> CreateCompanyAsync(CreateCompanyRequest request)
         {
             var company = new Company
             {

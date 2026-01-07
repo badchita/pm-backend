@@ -15,7 +15,7 @@ namespace pm_backend.Services.Commands
             _context = context;
         }
 
-        public async Task<TaskComment> CreateTaskCommentAsync(TaskCommentDTO request, int taskId)
+        public async Task<TaskComment> CreateTaskCommentAsync(CreateTaskCommentRequest request, int taskId)
         {
             var task = await _context.ProjectTasks.FirstOrDefaultAsync(t => t.Id == taskId);
 

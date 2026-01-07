@@ -93,7 +93,7 @@ namespace pm_backend.Services.Queries
             };
         }
 
-        public async Task<ProjectTaskBoardDTO?> GetProjectWithTasksAsync(int projectId)
+        public async Task<ProjectTaskBoardResponse?> GetProjectWithTasksAsync(int projectId)
         {
             var project = await _context.Projects
                 .Include(p => p.Tasks)
@@ -101,7 +101,7 @@ namespace pm_backend.Services.Queries
 
             if (project == null) return null;
 
-            var response = new ProjectTaskBoardDTO
+            var response = new ProjectTaskBoardResponse
             {
                 Id = project.Id,
                 ProjectIdNumber = project.ProjectIdNumber,

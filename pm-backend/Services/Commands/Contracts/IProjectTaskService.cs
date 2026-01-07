@@ -1,4 +1,4 @@
-﻿using pm_backend.DTOs.Tasks;
+﻿using pm_backend.DTOs;
 using pm_backend.Models;
 
 namespace pm_backend.Services.Commands.Contracts

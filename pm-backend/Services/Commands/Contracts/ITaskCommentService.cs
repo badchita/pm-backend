@@ -5,6 +5,6 @@ namespace pm_backend.Services.Commands.Contracts
 {
     public interface ITaskCommentService
     {
-        Task<TaskComment> CreateTaskCommentAsync(TaskCommentDTO request, int taskId);
+        Task<TaskComment> CreateTaskCommentAsync(CreateTaskCommentRequest request, int taskId);
     }
 }
