@@ -25,7 +25,7 @@ namespace pm_backend.Controllers
         [ProducesResponseType(typeof(PagedResult<Project>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Dashboard>> GetDashboard()
+        public async Task<ActionResult<DashboardDTO>> GetDashboard()
         {
             try
             {

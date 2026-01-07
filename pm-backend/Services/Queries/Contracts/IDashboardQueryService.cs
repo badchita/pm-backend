@@ -4,6 +4,6 @@ namespace pm_backend.Services.Queries.Contracts
 {
     public interface IDashboardQueryService
     {
-        Task<Dashboard> GetDashboardAsync(string userEmail);
+        Task<DashboardDTO> GetDashboardAsync(string userEmail);
     }
 }

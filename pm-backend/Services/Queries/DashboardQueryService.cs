@@ -16,7 +16,7 @@ namespace pm_backend.Services.Queries
             _context = context;
         }
 
-        public async Task<Dashboard> GetDashboardAsync(string userEmail)
+        public async Task<DashboardDTO> GetDashboardAsync(string userEmail)
         {
             var now = DateTime.UtcNow;
             var upcomingRange = now.AddDays(14);
@@ -76,7 +76,7 @@ namespace pm_backend.Services.Queries
                 .OrderByDescending(x => x.CompletedTasks)
                 .ToListAsync();
 
-            return new Dashboard
+            return new DashboardDTO
             {
                 ActiveProjectsCount = activeProjects.Count,
                 ActiveProjects = activeProjects,
