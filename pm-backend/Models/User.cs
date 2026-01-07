@@ -16,7 +16,6 @@ namespace pm_backend.Models
 
         public int? CompanyId { get; set; }
 
-        [JsonIgnore]
         public Company? Company { get; set; }
 
         [Required]
@@ -29,6 +28,7 @@ namespace pm_backend.Models
         [Required]
         [Column(TypeName = "char(1)")]
         public string IsApproved { get; set; } = "N";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]

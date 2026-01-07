@@ -1,14 +1,16 @@
-﻿namespace pm_backend.DTOs
+﻿using pm_backend.Models;
+
+namespace pm_backend.DTOs
 {
-    public class ProjectListQuery
+    public class UserListQuery
     {
         public string? Search { get; set; }
 
-        public DateTime? DueDate { get; set; }
+        public string? IsApproved { get; set; }
 
-        public string? IsPublished { get; set; }
+        public int? CompanyId { get; set; }
 
-        public string? IsDeleted { get; set; }
+        public string? Role { get; set; }
 
         public int Page { get; set; } = 1;
 

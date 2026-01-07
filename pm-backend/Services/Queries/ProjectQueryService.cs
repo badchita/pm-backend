@@ -3,7 +3,6 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
-using System.Threading.Tasks;
 
 namespace pm_backend.Services.Queries
 {

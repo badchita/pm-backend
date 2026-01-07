@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace pm_backend.Models
 {
@@ -16,10 +17,14 @@ namespace pm_backend.Models
         [Required]
         [Column(TypeName = "char(1)")]
         public string IsApproved { get; set; } = "N";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [JsonIgnore]
         public ICollection<User> Users { get; set; } = new List<User>();
+
         public ICollection<Project> Projects { get; set; } = new List<Project>();
+
         public ICollection<ProjectTask> Tasks => Projects.SelectMany(p => p.Tasks).ToList();
     }
 }
