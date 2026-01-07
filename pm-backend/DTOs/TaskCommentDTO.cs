@@ -6,6 +6,7 @@ namespace pm_backend.DTOs
     {
         [Required]
         public string Content { get; set; } = null!;
+
         [Required]
         public int UserId { get; set; }
     }

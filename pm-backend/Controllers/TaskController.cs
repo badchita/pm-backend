@@ -40,7 +40,7 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateTaskComment(int taskId, CreateTaskCommentRequest taskCommentRequest)
+        public async Task<IActionResult> CreateTaskComment(int taskId, TaskCommentDTO taskCommentRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
