@@ -33,6 +33,17 @@ namespace pm_backend.Services.Commands
             await _context.SaveChangesAsync();
         }
 
+        public async Task<User?> GetUSerByIdAsync(int id)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
+
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            return user;
+        }
+
         public async Task<User?> UpdateUserAsync(int id, UserDto request)
         {
 
