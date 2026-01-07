@@ -33,7 +33,7 @@ namespace pm_backend.Services.Commands
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User?> GetUSerByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");

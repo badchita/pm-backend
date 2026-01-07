@@ -117,6 +117,34 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid user id.");
+
+            try
+            {
+                var user = await _userService.GetUserByIdAsync(id);
+
+                return Ok(user);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving the user.");
+            }
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
@@ -146,7 +174,7 @@ namespace pm_backend.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    "An unexpected error occurred while updating the project.");
+                    "An unexpected error occurred while updating the user.");
             }
         }
     }
