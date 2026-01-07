@@ -2,11 +2,11 @@
 
 namespace pm_backend.DTOs
 {
-    public class LoginResponse
-    {
-        public string Token { get; set; } = "";
-        public UserDto User { get; set; } = new();
-    }
+    //public class LoginResponse
+    //{
+    //    public string Token { get; set; } = "";
+    //    public UserDto User { get; set; } = new();
+    //}
 
     public class UserDto
     {
