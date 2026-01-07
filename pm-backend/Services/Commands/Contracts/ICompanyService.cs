@@ -5,6 +5,6 @@ namespace pm_backend.Services.Commands.Contracts
 {
     public interface ICompanyService
     {
-        Task<Company> CreateCompanyAsync(CreateCompanyRequest request);
+        Task<Company> CreateCompanyAsync(CreateCompanyDTO request);
     }
 }
