@@ -1,4 +1,6 @@
-﻿namespace pm_backend.DTOs.Tasks
+﻿using pm_backend.Models;
+
+namespace pm_backend.DTOs
 {
     public class CreateProjectTaskRequest
     {
@@ -25,5 +27,27 @@
         public DateTime? TestingStartDate { get; set; }
 
         public DateTime? TestingEndDate { get; set; }
+    }
+
+    public class ProjectTaskListQuery
+    {
+        public int Page { get; set; } = 1;
+
+        public int PageSize { get; set; } = 10;
+
+        public string? Search { get; set; }
+
+        public string? State { get; set; }
+
+        public string? AssignedTo { get; set; }
+
+        public string? SortBy { get; set; } = "createdAt";
+
+        public string? SortDirection { get; set; } = "desc";
+    }
+
+    public class UpdateTaskStateRequest
+    {
+        public TaskState State { get; set; }
     }
 }

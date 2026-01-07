@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.Data;
 using pm_backend.DTOs;
-using pm_backend.DTOs.Tasks;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries.Contracts;
