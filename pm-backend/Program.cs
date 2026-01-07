@@ -83,6 +83,7 @@ namespace pm_backend
             builder.Services.AddScoped<ITaskCommentReactionService, TaskCommentReactionService>();
             builder.Services.AddScoped<ITaskStateHistoryService, TaskStateHistoryService>();
             builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
 
