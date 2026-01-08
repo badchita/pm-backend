@@ -147,12 +147,6 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUser(int id, UserDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (id <= 0)
-                return BadRequest("Invalid user id.");
-
             try
             {
 

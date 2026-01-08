@@ -59,5 +59,22 @@ namespace pm_backend.Services.Commands
 
             return company;
         }
+
+        public async Task<Company?> UpdateCompanyAsync(int id, CreateCompanyRequest request)
+        {
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == id && c.IsDeleted == "N");
+
+            if (company == null)
+                throw new KeyNotFoundException("Company not found.");
+
+            company.Name = request.Name;
+            company.CompanyEmail = request.CompanyEmail;
+            company.IsApproved = request.IsApproved;
+
+            await _context.SaveChangesAsync();
+
+            return company;
+        }
     }
 }
