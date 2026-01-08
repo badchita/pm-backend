@@ -87,9 +87,6 @@ namespace pm_backend.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateIsDeleted(int id, UserIsDeletedRequest userIsDeleted)
         {
-            if (id <= 0)
-                return BadRequest("Invalid project id.");
-
             try
             {
 

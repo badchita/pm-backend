@@ -29,5 +29,23 @@ namespace pm_backend.Services.Commands
 
             return company;
         }
+
+        public async Task UpdateIsDeletedAsync(int id, string isDeleted)
+        {
+            var company = await _context.Companies.FindAsync(id);
+
+            if (company == null)
+                throw new KeyNotFoundException("Company not found.");
+
+            company.IsDeleted = isDeleted;
+
+            if (isDeleted == "Y")
+            {
+                company.IsApproved = "N";
+            }
+
+            _context.Companies.Update(company);
+            await _context.SaveChangesAsync();
+        }
     }
 }

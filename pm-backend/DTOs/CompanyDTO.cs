@@ -29,4 +29,9 @@
 
         public string? SortDirection { get; set; } = "desc";
     }
+
+    public class CompanyIsDeletedRequest
+    {
+        public string IsDeleted { get; set; } = "N";
+    }
 }

@@ -85,6 +85,7 @@ namespace pm_backend
             builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ICompanyQueryService, CompanyQueryService>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
 
             var app = builder.Build();
 
