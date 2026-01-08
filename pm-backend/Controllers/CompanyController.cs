@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.DTOs;
 using pm_backend.Models;
+using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries.Contracts;
 
 namespace pm_backend.Controllers
@@ -11,12 +12,15 @@ namespace pm_backend.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyQueryService _companyQueryService;
+        private readonly ICompanyService _companyService;
 
         public CompanyController(
-            ICompanyQueryService companyQueryService
+            ICompanyQueryService companyQueryService,
+            ICompanyService companyService
         )
         {
             _companyQueryService = companyQueryService;
+            _companyService = companyService;
         }
 
         [HttpGet]
@@ -40,6 +44,41 @@ namespace pm_backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "An unexpected error occurred while retrieving companies.");
+            }
+        }
+
+        [HttpPut("{id}/isDeleted")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(CompanyIsDeletedRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateIsDeleted(int id, CompanyIsDeletedRequest companyIsDeleted)
+        {
+            try
+            {
+
+                await _companyService.UpdateIsDeletedAsync(id, companyIsDeleted.IsDeleted);
+
+                return Ok(NoContent());
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while updating the user.");
             }
         }
     }
