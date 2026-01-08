@@ -41,33 +41,33 @@ namespace pm_backend.Services.Queries
 
             if (!string.IsNullOrWhiteSpace(query.Search))
             {
-                users = users.Where(p =>
-                    p.Name.Contains(query.Search) ||
-                    p.Email.Contains(query.Search)
+                users = users.Where(u =>
+                    u.Name.Contains(query.Search) ||
+                    u.Email.Contains(query.Search)
                 );
             }
 
             if (!string.IsNullOrWhiteSpace(query.IsApproved))
             {
-                users = users.Where(p => p.IsApproved == query.IsApproved);
+                users = users.Where(u => u.IsApproved == query.IsApproved);
             }
 
             if (query.CompanyId.HasValue)
             {
-                users = users.Where(p => p.CompanyId == query.CompanyId);
+                users = users.Where(u => u.CompanyId == query.CompanyId);
             }
 
             if (!string.IsNullOrWhiteSpace(query.Role))
             {
                 if (Enum.TryParse<UserRole>(query.Role, ignoreCase: true, out var roleFilter))
                 {
-                    users = users.Where(p => p.Role == roleFilter);
+                    users = users.Where(u => u.Role == roleFilter);
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(query.IsDeleted))
             {
-                users = users.Where(p => p.IsDeleted == query.IsDeleted);
+                users = users.Where(u => u.IsDeleted == query.IsDeleted);
             }
 
             var sortBy = query.SortBy?.Trim().ToLower();
@@ -76,18 +76,18 @@ namespace pm_backend.Services.Queries
             users = sortBy switch
             {
                 "name" => sortDirection == "asc"
-                    ? users.OrderBy(p => p.Name)
-                    : users.OrderByDescending(p => p.Name),
+                    ? users.OrderBy(u => u.Name)
+                    : users.OrderByDescending(u => u.Name),
 
                 "email" => sortDirection == "asc"
-                    ? users.OrderBy(p => p.Email)
-                    : users.OrderByDescending(p => p.Email),
+                    ? users.OrderBy(u => u.Email)
+                    : users.OrderByDescending(u => u.Email),
 
                 "createdat" => sortDirection == "asc"
-                    ? users.OrderBy(p => p.CreatedAt)
-                    : users.OrderByDescending(p => p.CreatedAt),
+                    ? users.OrderBy(u => u.CreatedAt)
+                    : users.OrderByDescending(u => u.CreatedAt),
 
-                _ => users.OrderByDescending(p => p.CreatedAt)
+                _ => users.OrderByDescending(u => u.CreatedAt)
             };
 
             var totalCount = await users.CountAsync();
