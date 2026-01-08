@@ -18,6 +18,10 @@ namespace pm_backend.Models
         [Column(TypeName = "char(1)")]
         public string IsApproved { get; set; } = "N";
 
+        [Required]
+        [Column(TypeName = "char(1)")]
+        public string IsDeleted { get; set; } = "N";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]

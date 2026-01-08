@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pm_backend.Data;
 
@@ -11,9 +12,11 @@ using pm_backend.Data;
 namespace pm_backend.Migrations
 {
     [DbContext(typeof(PmDbContext))]
-    partial class PmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108031152_CompanyIsDeletedColumn")]
+    partial class CompanyIsDeletedColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
