@@ -7,5 +7,6 @@ namespace pm_backend.Services.Commands.Contracts
     {
         Task<Company> CreateCompanyAsync(CreateCompanyRequest request);
         Task UpdateIsDeletedAsync(int id, string isDeleted);
+        Task<Company?> GetCompanyByIdAsync(int id);
     }
 }

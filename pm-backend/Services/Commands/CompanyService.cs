@@ -1,4 +1,5 @@
-﻿using pm_backend.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
@@ -46,6 +47,17 @@ namespace pm_backend.Services.Commands
 
             _context.Companies.Update(company);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Company?> GetCompanyByIdAsync(int id)
+        {
+            var company = await _context.Companies
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
+
+            if (company == null)
+                throw new KeyNotFoundException("Company not found.");
+
+            return company;
         }
     }
 }
