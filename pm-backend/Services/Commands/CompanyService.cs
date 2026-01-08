@@ -63,14 +63,33 @@ namespace pm_backend.Services.Commands
         public async Task<Company?> UpdateCompanyAsync(int id, CreateCompanyRequest request)
         {
 
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == id && c.IsDeleted == "N");
+            var company = await _context.Companies
+                .Include(c => c.Users)
+                .FirstOrDefaultAsync(c => c.Id == id && c.IsDeleted == "N");
 
             if (company == null)
                 throw new KeyNotFoundException("Company not found.");
 
+            var oldCompanyEmail = company.CompanyEmail;
+            var newCompanyEmail = request.CompanyEmail;
+
             company.Name = request.Name;
             company.CompanyEmail = request.CompanyEmail;
             company.IsApproved = request.IsApproved;
+
+            if (!string.Equals(oldCompanyEmail, newCompanyEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (var user in company.Users)
+                {
+                    if (string.IsNullOrWhiteSpace(user.Email)) continue;
+
+                    var atIndex = user.Email.IndexOf('@');
+                    if (atIndex < 0) continue;
+
+                    var username = user.Email[..atIndex];
+                    user.Email = $"{username}{newCompanyEmail}";
+                }
+            }
 
             await _context.SaveChangesAsync();
 
