@@ -1,4 +1,7 @@
-﻿using pm_backend.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using pm_backend.Data;
+using pm_backend.DTOs;
+using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 
 namespace pm_backend.Services.Commands
@@ -28,6 +31,36 @@ namespace pm_backend.Services.Commands
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
+
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            return user;
+        }
+
+        public async Task<User?> UpdateUserAsync(int id, UserDto request)
+        {
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
+
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            user.Name = request.Name;
+            user.Email = request.Email;
+            user.IsApproved = request.IsApproved;
+            user.Role = request.Role;
+            user.CompanyId = request.CompanyId;
+
+            await _context.SaveChangesAsync();
+
+            return user;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using pm_backend.DTOs;
 using pm_backend.Models;
+using pm_backend.Services.Commands;
 using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries.Contracts;
 using System.Security.Claims;
@@ -104,6 +105,67 @@ namespace pm_backend.Controllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while updating the user.");
+            }
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid user id.");
+
+            try
+            {
+                var user = await _userService.GetUserByIdAsync(id);
+
+                return Ok(user);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving the user.");
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUser(int id, UserDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id <= 0)
+                return BadRequest("Invalid user id.");
+
+            try
+            {
+
+                var updatedUser = await _userService.UpdateUserAsync(id, request);
+
+                return Ok(updatedUser);
             }
             catch (UnauthorizedAccessException ex)
             {
