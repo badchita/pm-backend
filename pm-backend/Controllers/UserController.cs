@@ -115,15 +115,12 @@ namespace pm_backend.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserById(int id)
         {
-            if (id <= 0)
-                return BadRequest("Invalid user id.");
-
             try
             {
                 var user = await _userService.GetUserByIdAsync(id);

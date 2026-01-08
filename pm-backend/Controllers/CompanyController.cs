@@ -81,5 +81,30 @@ namespace pm_backend.Controllers
                     "An unexpected error occurred while updating the user.");
             }
         }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCompanyById(int id)
+        {
+            try
+            {
+                var company = await _companyService.GetCompanyByIdAsync(id);
+
+                return Ok(company);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while retrieving the company.");
+            }
+        }
     }
 }
