@@ -32,7 +32,9 @@ namespace pm_backend.Services.Queries
 
         public async Task<PagedResult<User>> GetUsersAsync(UserListQuery query, string userEmail)
         {
-            IQueryable<User> users = _context.Users.AsQueryable();
+            IQueryable<User> users = _context.Users
+                .Include(u => u.Company)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(userEmail))
             {
