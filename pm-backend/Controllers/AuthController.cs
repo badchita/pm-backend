@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
-using pm_backend.Services;
 using pm_backend.Services.Commands.Contracts;
-using System;
 
 namespace pm_backend.Controllers
 {
