@@ -5,6 +5,7 @@ using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using pm_backend.Services.Queries;
 using pm_backend.Services.Queries.Contracts;
+using System.Security.Claims;
 
 namespace pm_backend.Controllers
 {
@@ -159,6 +160,38 @@ namespace pm_backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "An unexpected error occurred while getting companies.");
+            }
+        }
+
+        [HttpGet("{companyId}/users")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(PagedResult<User>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetCompanyUsers(int companyId, [FromQuery] UserListQuery query)
+        {
+            try
+            {
+                var result = await _companyQueryService
+                    .GetCompanyUsersAsync(companyId, query);
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                     ex.Message
+                );
             }
         }
     }

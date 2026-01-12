@@ -7,5 +7,6 @@ namespace pm_backend.Services.Queries.Contracts
     {
         Task<IReadOnlyList<Company>> GetAllCompaniesAsync(string? search);
         Task<PagedResult<Company>> GetCompaniesAsync(CompanyListQuery query);
+        Task<PagedResult<User>> GetCompanyUsersAsync(int companyId, UserListQuery query);
     }
 }
