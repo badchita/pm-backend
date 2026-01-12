@@ -58,6 +58,36 @@ namespace pm_backend.Services.Commands
             user.Role = request.Role;
             user.CompanyId = request.CompanyId;
 
+            user.Email = request.Email;
+
+            if (request.CompanyId > 0)
+            {
+                var company = await _context.Companies
+                    .FirstOrDefaultAsync(c => c.Id == request.CompanyId && c.IsDeleted == "N");
+
+                if (company == null)
+                    throw new KeyNotFoundException("Company not found.");
+
+                var currentEmail = request.Email;
+                var userNamePart = currentEmail.Split('@')[0];
+                var companyEmail = company.CompanyEmail;
+
+                string companyDomain;
+
+                if (companyEmail.Contains("@"))
+                {
+                    companyDomain = "@" + companyEmail.Split('@')[1];
+                }
+                else
+                {
+                    companyDomain = companyEmail.StartsWith("@")
+                        ? companyEmail
+                        : "@" + companyEmail;
+                }
+
+                user.Email = $"{userNamePart}{companyDomain}";
+            }
+
             await _context.SaveChangesAsync();
 
             return user;
