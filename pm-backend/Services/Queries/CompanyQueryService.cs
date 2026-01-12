@@ -113,10 +113,21 @@ namespace pm_backend.Services.Queries
 
             if (!string.IsNullOrWhiteSpace(query.Role))
             {
-                if (Enum.TryParse<UserRole>(query.Role, ignoreCase: true, out var roleFilter))
+                var roleStrings = query.Role.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(r => r.Trim())
+                    .Where(r => Enum.TryParse<UserRole>(r, true, out _))
+                    .Select(r => Enum.Parse<UserRole>(r, true))
+                    .ToList();
+
+                if (roleStrings.Any())
                 {
-                    users = users.Where(u => u.Role == roleFilter);
+                    users = users.Where(u => roleStrings.Contains(u.Role));
                 }
+            }
+
+            if (query.ExcludeUserId.HasValue)
+            {
+                users = users.Where(u => u.Id != query.ExcludeUserId.Value);
             }
 
             var sortBy = query.SortBy?.Trim().ToLower();
