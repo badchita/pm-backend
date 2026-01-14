@@ -35,6 +35,7 @@ namespace pm_backend.DTOs
         public string? Role { get; set; }
 
         public string? IsDeleted { get; set; }
+        public int? ExcludeUserId { get; set; }
 
         public int Page { get; set; } = 1;
 
