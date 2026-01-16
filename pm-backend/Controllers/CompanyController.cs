@@ -96,6 +96,9 @@ namespace pm_backend.Controllers
             {
                 var company = await _companyService.GetCompanyByIdAsync(id);
 
+                if (company == null)
+                    return NotFound();
+
                 return Ok(company);
             }
             catch (UnauthorizedAccessException ex)

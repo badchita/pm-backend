@@ -38,9 +38,6 @@ namespace pm_backend.Services.Commands
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
 
-            if (user == null)
-                throw new KeyNotFoundException("User not found.");
-
             return user;
         }
 
