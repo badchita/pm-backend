@@ -19,6 +19,12 @@ namespace pm_backend.Services.Commands
 
         public async Task<Project> CreateProject(CreateProjectRequest request, string userEmail)
         {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var project = new Project
             {
                 ProjectName = request.ProjectName,
@@ -27,6 +33,7 @@ namespace pm_backend.Services.Commands
                 ProjectIdNumber = await GenerateProjectNumber(),
                 IsPublished = "N",
                 IsDeleted = "N",
+                CompanyId = user.CompanyId.Value,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -41,8 +48,14 @@ namespace pm_backend.Services.Commands
             if (string.IsNullOrWhiteSpace(userEmail))
                 throw new UnauthorizedAccessException("User not authorized.");
 
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var project = await _context.Projects
-                .FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == "N");
+                .FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == "N" && p.CompanyId == user.CompanyId.Value);
 
             return project;
         }
@@ -52,7 +65,9 @@ namespace pm_backend.Services.Commands
             if (string.IsNullOrWhiteSpace(userEmail))
                 throw new UnauthorizedAccessException("User not authorized.");
 
-            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == "N");
+
+            var project = await _context.Projects
+                .FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == "N");
 
             if (project == null)
                 return null;

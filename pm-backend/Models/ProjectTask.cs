@@ -13,6 +13,7 @@ namespace pm_backend.Models
         public string TaskName { get; set; } = string.Empty;
 
         public string? Description { get; set; }
+
         public string? AcceptanceCriteria { get; set; }
 
         [MaxLength(255)]
@@ -22,30 +23,41 @@ namespace pm_backend.Models
 
         [MaxLength(50)]
         public string TaskIdNumber { get; set; } = string.Empty;
+
         public int TaskSequence { get; set; }
 
         public TaskState State { get; set; } = TaskState.New;
 
         public DateTime? ReadyForDevelopmentDate { get; set; }
+
         public DateTime? DoneDate { get; set; }
+
         public DateTime? TestingStartDate { get; set; }
+
         public DateTime? TestingEndDate { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
 
         [MaxLength(255)]
         public string CreatedBy { get; set; } = string.Empty;
 
+
         [MaxLength(255)]
         public string? UpdatedBy { get; set; }
+
 
         [ForeignKey("Project")]
         public int ProjectId { get; set; }
 
+
         [JsonIgnore]
         public Project Project { get; set; }
 
+
         [JsonIgnore]
         public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
+
 
         [JsonIgnore]
         public ICollection<TaskStateHistory> StateHistories { get; set; } = new List<TaskStateHistory>();

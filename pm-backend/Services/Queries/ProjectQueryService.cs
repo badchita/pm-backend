@@ -18,7 +18,14 @@ namespace pm_backend.Services.Queries
 
         public async Task<PagedResult<Project>> GetProjectsAsync(ProjectListQuery query, string userEmail)
         {
-            IQueryable<Project> projects = _context.Projects.AsQueryable();
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
+            IQueryable<Project> projects = _context.Projects
+                .Where(p => p.CompanyId == user.CompanyId.Value);
 
             if (!string.IsNullOrWhiteSpace(query.Search))
             {
