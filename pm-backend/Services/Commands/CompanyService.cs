@@ -54,9 +54,6 @@ namespace pm_backend.Services.Commands
             var company = await _context.Companies
                 .FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted == "N");
 
-            if (company == null)
-                throw new KeyNotFoundException("Company not found.");
-
             return company;
         }
 

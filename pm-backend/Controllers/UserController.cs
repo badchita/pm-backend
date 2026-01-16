@@ -125,6 +125,9 @@ namespace pm_backend.Controllers
             {
                 var user = await _userService.GetUserByIdAsync(id);
 
+                if (user == null)
+                    return NotFound();
+
                 return Ok(user);
             }
             catch (UnauthorizedAccessException ex)
