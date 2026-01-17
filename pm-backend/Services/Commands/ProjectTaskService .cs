@@ -76,8 +76,14 @@ namespace pm_backend.Services.Commands
             if (string.IsNullOrWhiteSpace(userEmail))
                 throw new UnauthorizedAccessException("User not authorized.");
 
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var task = await _context.ProjectTasks
-                .FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId);
+                .FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId && t.CompanyId == user.CompanyId);
 
             return task;
         }
