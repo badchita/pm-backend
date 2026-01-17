@@ -22,6 +22,12 @@ namespace pm_backend.Services.Commands
 
         public async Task<ProjectTask> CreateTaskAsync(CreateProjectTaskRequest request, string userEmail)
         {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var project = await _context.Projects
                 .FirstOrDefaultAsync(p => p.Id == request.ProjectId);
 
@@ -45,6 +51,7 @@ namespace pm_backend.Services.Commands
                 CreatedBy = userEmail,
                 TaskIdNumber = taskNumber,
                 TaskSequence = taskSequence,
+                CompanyId = user.CompanyId.Value,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -79,6 +86,12 @@ namespace pm_backend.Services.Commands
             if (string.IsNullOrWhiteSpace(userEmail))
                 throw new UnauthorizedAccessException("User not authorized.");
 
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var task = await _context.ProjectTasks.FirstOrDefaultAsync(t => t.Id == id && t.ProjectId == projectId);
 
             if (task == null)
@@ -97,6 +110,7 @@ namespace pm_backend.Services.Commands
             task.TestingStartDate = request.TestingStartDate;
             task.TestingEndDate = request.TestingEndDate;
             task.State = (TaskState)request.State;
+            task.UpdatedBy = user.Email;
 
             await _taskStateHistoryService.TrackStateChangeAsync(task.Id, previousState, task.State, userEmail);
 
