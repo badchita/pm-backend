@@ -38,26 +38,24 @@ namespace pm_backend.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
         [MaxLength(255)]
         public string CreatedBy { get; set; } = string.Empty;
-
 
         [MaxLength(255)]
         public string? UpdatedBy { get; set; }
 
-
         [ForeignKey("Project")]
         public int ProjectId { get; set; }
-
 
         [JsonIgnore]
         public Project Project { get; set; }
 
+        public int CompanyId { get; set; }
+
+        public Company Company { get; set; } = null!;
 
         [JsonIgnore]
         public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
-
 
         [JsonIgnore]
         public ICollection<TaskStateHistory> StateHistories { get; set; } = new List<TaskStateHistory>();

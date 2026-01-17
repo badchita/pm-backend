@@ -19,16 +19,12 @@ namespace pm_backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ---------------- FIX CASCADE ----------------
-
-            // TaskComment → User: NO ACTION
             modelBuilder.Entity<TaskComment>()
                 .HasOne(c => c.User)
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // TaskCommentReaction → TaskComment: CASCADE
             modelBuilder.Entity<TaskCommentReaction>()
                 .HasOne(r => r.TaskComment)
                 .WithMany(c => c.Reactions)
@@ -36,13 +32,18 @@ namespace pm_backend.Data
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
-            // TaskCommentReaction → User: NO ACTION
             modelBuilder.Entity<TaskCommentReaction>()
                 .HasOne(r => r.User)
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasOne(pt => pt.Company)
+                .WithMany(c => c.ProjectTasks)
+                .HasForeignKey(pt => pt.CompanyId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
