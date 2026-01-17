@@ -29,6 +29,6 @@ namespace pm_backend.Models
 
         public ICollection<Project> Projects { get; set; } = new List<Project>();
 
-        public ICollection<ProjectTask> Tasks => Projects.SelectMany(p => p.Tasks).ToList();
+        public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
     }
 }
