@@ -18,37 +18,43 @@ namespace pm_backend.Services.Queries
 
         public async Task<Dashboard> GetDashboardAsync(string userEmail)
         {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
             var now = DateTime.UtcNow;
             var upcomingRange = now.AddDays(14);
 
-            var activeProjects = await _context.Projects
-                .Where(p =>
-                    p.IsDeleted == "N" &&
-                    p.IsPublished == "Y" &&
-                    p.CreatedBy == userEmail)
-                .Select(p => new ActiveProjectProgressDto
-                {
-                    ProjectId = p.Id,
-                    ProjectName = p.ProjectName,
-                    DueDate = p.DueDate,
+                var activeProjects = await _context.Projects
+                    .Where(p =>
+                        p.IsDeleted == "N" &&
+                        p.IsPublished == "Y" &&
+                        p.CompanyId == user.CompanyId.Value)
+                    .Select(p => new ActiveProjectProgressDto
+                    {
+                        ProjectId = p.Id,
+                        ProjectName = p.ProjectName,
+                        DueDate = p.DueDate,
 
-                    TotalTasks = p.Tasks.Count(),
-                    ClosedTasks = p.Tasks.Count(t => t.State == TaskState.Closed),
+                        TotalTasks = p.Tasks.Count(),
+                        ClosedTasks = p.Tasks.Count(t => t.State == TaskState.Closed),
 
-                    ProgressPercentage =
-                        p.Tasks.Count() == 0
-                            ? 0
-                            : (int)Math.Round(
-                                (double)p.Tasks.Count(t => t.State == TaskState.Closed) * 100
-                                / p.Tasks.Count()
-                              )
-                })
-                .OrderByDescending(p => p.ProgressPercentage)
-                .ToListAsync();
+                        ProgressPercentage =
+                            p.Tasks.Count() == 0
+                                ? 0
+                                : (int)Math.Round(
+                                    (double)p.Tasks.Count(t => t.State == TaskState.Closed) * 100
+                                    / p.Tasks.Count()
+                                  )
+                    })
+                    .OrderByDescending(p => p.ProgressPercentage)
+                    .ToListAsync();
 
             var upcomingDeadlines = await _context.Projects
                 .Where(p =>
-                    p.CreatedBy == userEmail &&
+                    p.CompanyId == user.CompanyId.Value &&
                     p.IsDeleted == "N" &&
                     p.IsPublished == "Y" &&
                     p.DueDate != null &&
@@ -66,7 +72,7 @@ namespace pm_backend.Services.Queries
             var tasksCompletedByProject = await _context.ProjectTasks
                 .Where(t =>
                     t.State == TaskState.Closed &&
-                    t.Project.CreatedBy == userEmail)
+                    t.Project.CompanyId == user.CompanyId.Value)
                 .GroupBy(t => t.Project.ProjectName)
                 .Select(g => new TasksCompletedByProjectDto
                 {
