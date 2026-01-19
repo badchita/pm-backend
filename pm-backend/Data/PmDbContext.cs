@@ -21,7 +21,7 @@ namespace pm_backend.Data
 
             modelBuilder.Entity<TaskComment>()
                 .HasOne(c => c.User)
-                .WithMany()
+                .WithMany(u => u.TaskComments)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -34,9 +34,9 @@ namespace pm_backend.Data
 
             modelBuilder.Entity<TaskCommentReaction>()
                 .HasOne(r => r.User)
-                .WithMany()
+                .WithMany(u => u.TaskCommentReactions)
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.NoAction) 
                 .IsRequired();
 
             modelBuilder.Entity<ProjectTask>()
