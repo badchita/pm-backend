@@ -30,7 +30,7 @@ namespace pm_backend.Services.Commands
                 ProjectName = request.ProjectName,
                 Description = request.Description,
                 CreatedBy = userEmail,
-                ProjectIdNumber = await GenerateProjectNumber(),
+                ProjectIdNumber = await GenerateProjectNumber(user.CompanyId.Value),
                 IsPublished = "N",
                 IsDeleted = "N",
                 CompanyId = user.CompanyId.Value,
@@ -163,9 +163,10 @@ namespace pm_backend.Services.Commands
             await _context.SaveChangesAsync();
         }
 
-        private async Task<string> GenerateProjectNumber()
+        private async Task<string> GenerateProjectNumber(int companyId)
         {
             var latestProject = await _context.Projects
+                .Where(p => p.CompanyId == companyId)
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefaultAsync();
 
