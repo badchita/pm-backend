@@ -7,6 +7,7 @@ using pm_backend.Models;
 using pm_backend.Services.Commands.Contracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace pm_backend.Services.Commands
@@ -92,11 +93,22 @@ namespace pm_backend.Services.Commands
             if (isApprove == "N")
                 throw new UnauthorizedAccessException("User not yet approved.");
 
-            var token = GenerateJwtToken(user);
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            _context.RefreshTokens.Add(new RefreshToken
+            {
+                UserId = user.Id,
+                Token = refreshToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7)
+            });
+
+            await _context.SaveChangesAsync();
 
             return new LoginResponse
             {
-                Token = token,
+                Token = accessToken,
                 User = new UserDto
                 {
                     Id = user.Id,
@@ -109,6 +121,38 @@ namespace pm_backend.Services.Commands
                 }
             };
         }
+
+        public async Task<LoginResponse> RefreshToken(string refreshToken)
+        {
+            var token = await _context.RefreshTokens
+                .Include(rt => rt.User)
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+            if (token == null || !token.IsActive)
+                throw new UnauthorizedAccessException("Invalid refresh token");
+
+            var newRefreshToken = GenerateRefreshToken();
+
+            token.RevokedAt = DateTime.UtcNow;
+            token.ReplacedByToken = newRefreshToken;
+
+            _context.RefreshTokens.Add(new RefreshToken
+            {
+                UserId = token.UserId,
+                Token = newRefreshToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7)
+            });
+
+            await _context.SaveChangesAsync();
+
+            return new LoginResponse
+            {
+                Token = GenerateJwtToken(token.User),
+                RefreshToken = newRefreshToken
+            };
+        }
+
 
         private string GenerateJwtToken(User user)
         {
@@ -126,7 +170,7 @@ namespace pm_backend.Services.Commands
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(6),
+                Expires = DateTime.UtcNow.AddMinutes(30),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(
@@ -138,5 +182,12 @@ namespace pm_backend.Services.Commands
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomBytes = RandomNumberGenerator.GetBytes(64);
+            return Convert.ToBase64String(randomBytes);
+        }
+
     }
 }
