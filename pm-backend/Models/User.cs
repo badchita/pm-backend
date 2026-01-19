@@ -36,6 +36,10 @@ namespace pm_backend.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]
+        public ICollection<TaskComment> TaskComments { get; set; } = new List<TaskComment>();
+
+
+        [JsonIgnore]
         public ICollection<TaskCommentReaction> TaskCommentReactions { get; set; }= new List<TaskCommentReaction>();
     }
 

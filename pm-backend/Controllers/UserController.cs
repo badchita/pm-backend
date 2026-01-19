@@ -34,8 +34,11 @@ namespace pm_backend.Controllers
         {
             try
             {
+                var userEmail = User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? "system@local";
 
-                var result = await _userQueryService.GetAllUsersAsync(search);
+                var result = await _userQueryService.GetAllUsersAsync(search, userEmail);
 
                 return Ok(result);
             }

@@ -15,9 +15,16 @@ namespace pm_backend.Services.Queries
             _context = context;
         }
 
-        public async Task<IReadOnlyList<User>> GetAllUsersAsync(string? search)
+        public async Task<IReadOnlyList<User>> GetAllUsersAsync(string? search, string userEmail)
         {
-            IQueryable<User> query = _context.Users;
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
+            IQueryable<User> query = _context.Users
+                .Where(u => u.CompanyId == user.CompanyId.Value);
 
             if (!string.IsNullOrWhiteSpace(search))
             {

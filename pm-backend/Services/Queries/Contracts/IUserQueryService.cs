@@ -5,7 +5,7 @@ namespace pm_backend.Services.Queries.Contracts
 {
     public interface IUserQueryService
     {
-        Task<IReadOnlyList<User>> GetAllUsersAsync(string? search);
+        Task<IReadOnlyList<User>> GetAllUsersAsync(string? search, string userEmail);
         Task<PagedResult<User>> GetUsersAsync(UserListQuery query, string userEmail);
     }
 }
