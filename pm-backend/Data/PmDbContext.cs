@@ -14,6 +14,7 @@ namespace pm_backend.Data
         public DbSet<TaskStateHistory> TaskStateHistories { get; set; }
         public DbSet<TaskCommentReaction> TaskCommentReactions { get; set; }
         public DbSet<Company> Companies{ get; set; }
+        public DbSet<RefreshToken> RefreshTokens{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
