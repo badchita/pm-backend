@@ -6,6 +6,8 @@
 
         public int UserId { get; set; }
 
+        public User User { get; set; } = null!;
+
         public string Token { get; set; } = null!;
 
         public DateTime ExpiresAt { get; set; }
@@ -19,7 +21,5 @@
         public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
 
         public bool IsActive => RevokedAt == null && !IsExpired;
-
-        public User User { get; set; } = null!;
     }
 }

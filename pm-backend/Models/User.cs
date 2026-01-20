@@ -38,9 +38,11 @@ namespace pm_backend.Models
         [JsonIgnore]
         public ICollection<TaskComment> TaskComments { get; set; } = new List<TaskComment>();
 
-
         [JsonIgnore]
         public ICollection<TaskCommentReaction> TaskCommentReactions { get; set; }= new List<TaskCommentReaction>();
+
+        [JsonIgnore]
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 
     public enum UserRole
