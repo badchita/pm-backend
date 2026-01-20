@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
+using pm_backend.Services.Commands;
 using pm_backend.Services.Commands.Contracts;
+using System.Security.Claims;
 
 namespace pm_backend.Controllers
 {
@@ -33,7 +36,7 @@ namespace pm_backend.Controllers
 
             try
             {
-                var user = await _authCommandService.RegisterUser(request);
+                var user = await _authCommandService.RegisterUserAsync(request);
 
                 return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
             }
@@ -71,7 +74,7 @@ namespace pm_backend.Controllers
 
             try
             {
-                var result = await _authCommandService.Login(request);
+                var result = await _authCommandService.LoginAsync(request);
 
                 return Ok(result);
             }
@@ -86,5 +89,50 @@ namespace pm_backend.Controllers
             }
         }
 
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(RefreshTokenResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken))
+                return BadRequest("Refresh token is required.");
+
+            try
+            {
+                var result = await _authCommandService.RefreshTokenAsync(request.RefreshToken);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred while processing your request.");
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized("Invalid user.");
+
+                await _authCommandService.LogoutAsync(userId);
+
+                return Ok(new { message = "Logged out" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Logout failed: {ex.Message}");
+            }
+        }
     }
 }

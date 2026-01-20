@@ -5,7 +5,9 @@ namespace pm_backend.Services.Commands.Contracts
 {
     public interface IAuthService
     {
-        Task<User> RegisterUser(DTOs.RegisterRequest registerForm);
-        Task<LoginResponse> Login(LoginRequest loginForm);
+        Task<User> RegisterUserAsync(DTOs.RegisterRequest registerForm);
+        Task<LoginResponse> LoginAsync(LoginRequest loginForm);
+        Task<LoginResponse> RefreshTokenAsync(string refreshToken);
+        Task LogoutAsync(string userId);
     }
 }

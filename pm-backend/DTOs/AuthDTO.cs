@@ -30,4 +30,16 @@ namespace pm_backend.DTOs
 
         public UserRole Role { get; set; }
     }
+
+    public class RefreshTokenRequest
+    {
+        public string RefreshToken { get; set; } = null!;
+    }
+
+    public class RefreshTokenResponse
+    {
+        public string Token { get; set; } = "";
+
+        public string RefreshToken { get; set; } = "";
+    }
 }

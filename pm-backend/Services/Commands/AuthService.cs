@@ -26,7 +26,7 @@ namespace pm_backend.Services.Commands
             _configuration = configuration;
         }
 
-        public async Task<User> RegisterUser(RegisterRequest registerForm)
+        public async Task<User> RegisterUserAsync(RegisterRequest registerForm)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace pm_backend.Services.Commands
             }
         }
 
-        public async Task<LoginResponse> Login(LoginRequest request)
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
             var user = await _context.Users
                 .Include(u => u.Company)
@@ -109,6 +109,7 @@ namespace pm_backend.Services.Commands
             return new LoginResponse
             {
                 Token = accessToken,
+                RefreshToken = refreshToken,
                 User = new UserDto
                 {
                     Id = user.Id,
@@ -122,7 +123,7 @@ namespace pm_backend.Services.Commands
             };
         }
 
-        public async Task<LoginResponse> RefreshToken(string refreshToken)
+        public async Task<LoginResponse> RefreshTokenAsync(string refreshToken)
         {
             var token = await _context.RefreshTokens
                 .Include(rt => rt.User)
@@ -153,6 +154,18 @@ namespace pm_backend.Services.Commands
             };
         }
 
+        public async Task LogoutAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
+
+            var tokens = _context.RefreshTokens
+                .Where(t => t.UserId == int.Parse(userId));
+
+            _context.RefreshTokens.RemoveRange(tokens);
+
+            await _context.SaveChangesAsync();
+        }
 
         private string GenerateJwtToken(User user)
         {
