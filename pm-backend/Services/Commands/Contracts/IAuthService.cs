@@ -7,7 +7,7 @@ namespace pm_backend.Services.Commands.Contracts
     {
         Task<User> RegisterUserAsync(DTOs.RegisterRequest registerForm);
         Task<LoginResponse> LoginAsync(LoginRequest loginForm);
-        Task<LoginResponse> RefreshTokenAsync(string refreshToken);
+        Task<RefreshTokenResponse> RefreshTokenAsync(string refreshToken);
         Task LogoutAsync(string userId);
     }
 }

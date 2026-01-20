@@ -123,7 +123,7 @@ namespace pm_backend.Services.Commands
             };
         }
 
-        public async Task<LoginResponse> RefreshTokenAsync(string refreshToken)
+        public async Task<RefreshTokenResponse> RefreshTokenAsync(string refreshToken)
         {
             var token = await _context.RefreshTokens
                 .Include(rt => rt.User)
@@ -132,27 +132,30 @@ namespace pm_backend.Services.Commands
             if (token == null || !token.IsActive)
                 throw new UnauthorizedAccessException("Invalid refresh token");
 
-            var newRefreshToken = GenerateRefreshToken();
+            var newTokenString = GenerateRefreshToken();
 
             token.RevokedAt = DateTime.UtcNow;
-            token.ReplacedByToken = newRefreshToken;
+            token.ReplacedByToken = newTokenString;
 
-            _context.RefreshTokens.Add(new RefreshToken
+            var newToken = new RefreshToken
             {
                 UserId = token.UserId,
-                Token = newRefreshToken,
+                Token = newTokenString,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(7)
-            });
+            };
+
+            _context.RefreshTokens.Add(newToken);
 
             await _context.SaveChangesAsync();
 
-            return new LoginResponse
+            return new RefreshTokenResponse
             {
                 Token = GenerateJwtToken(token.User),
-                RefreshToken = newRefreshToken
+                RefreshToken = newTokenString
             };
         }
+
 
         public async Task LogoutAsync(string userId)
         {
