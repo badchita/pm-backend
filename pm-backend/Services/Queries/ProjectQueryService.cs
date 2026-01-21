@@ -4,7 +4,6 @@ using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace pm_backend.Services.Queries
 {
@@ -25,7 +24,10 @@ namespace pm_backend.Services.Queries
             if (user == null)
                 throw new Exception("User not found.");
 
-            IQueryable<Project> projects = _context.Projects.AsQueryable();
+            IQueryable<Project> projects = _context.Projects
+                .Include(p => p.Company)
+                .AsQueryable();
+
 
             if (user.Role == UserRole.Manager)
             {
