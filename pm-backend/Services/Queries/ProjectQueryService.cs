@@ -64,6 +64,11 @@ namespace pm_backend.Services.Queries
                 projects = projects.Where(p => p.IsDeleted == query.IsDeleted);
             }
 
+            if (query.CompanyId.HasValue)
+            {
+                projects = projects.Where(p => p.CompanyId == query.CompanyId);
+            }
+
             var sortBy = query.SortBy?.Trim().ToLower();
             var sortDirection = query.SortDirection?.Trim().ToLower() == "asc" ? "asc" : "desc";
 
