@@ -27,6 +27,7 @@ namespace pm_backend.Models
         [JsonIgnore]
         public ICollection<User> Users { get; set; } = new List<User>();
 
+        [JsonIgnore]
         public ICollection<Project> Projects { get; set; } = new List<Project>();
 
         public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();

@@ -3,7 +3,7 @@ using pm_backend.Data;
 using pm_backend.DTOs;
 using pm_backend.Models;
 using pm_backend.Services.Queries.Contracts;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace pm_backend.Services.Queries
 {
@@ -25,7 +25,14 @@ namespace pm_backend.Services.Queries
                 throw new Exception("User not found.");
 
             IQueryable<Project> projects = _context.Projects
-                .Where(p => p.CompanyId == user.CompanyId.Value);
+                .Include(p => p.Company)
+                .AsQueryable();
+
+
+            if (user.Role == UserRole.Manager)
+            {
+                projects = projects.Where(p => p.CompanyId == user.CompanyId);
+            }
 
             if (!string.IsNullOrWhiteSpace(query.Search))
             {
@@ -55,6 +62,11 @@ namespace pm_backend.Services.Queries
             if (!string.IsNullOrWhiteSpace(query.IsDeleted))
             {
                 projects = projects.Where(p => p.IsDeleted == query.IsDeleted);
+            }
+
+            if (query.CompanyId.HasValue)
+            {
+                projects = projects.Where(p => p.CompanyId == query.CompanyId);
             }
 
             var sortBy = query.SortBy?.Trim().ToLower();
